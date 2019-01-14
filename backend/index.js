@@ -1,28 +1,42 @@
 
-var express = require("express"),
-  http = require("http"),
-  port = 5500,
-  app = require("express")(),
-  server = http.createServer(app),
-  bodyParser = require("body-parser"),
-  dbController = require('./dbHandler'),
-  userController = require('./userController')
+const express = require('express');
 
 
-dbController.CreateDB()
-console.log("Server started");
+const http = require('http');
 
 
-app.all("/*", function (req, res, next) {
+const port = 5500;
+
+
+const app = require('express')();
+
+
+const server = http.createServer(app);
+
+
+const bodyParser = require('body-parser');
+
+
+const dbController = require('./src/dbHandler');
+
+
+const userController = require('./src/userController');
+
+
+dbController.CreateDB();
+console.log('Server started');
+
+
+app.all('/*', (req, res, next) => {
   // CORS headers
-  res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+  res.header('Access-Control-Allow-Origin', '*'); // restrict it to the required domain
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   // Set custom headers for CORS
   res.header(
-    "Access-Control-Allow-Headers",
-    "Content-type,Accept,X-Access-Token,X-Key"
+    'Access-Control-Allow-Headers',
+    'Content-type,Accept,X-Access-Token,X-Key',
   );
-  if (req.method == "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     res.status(200).end();
   } else {
     next();
@@ -33,48 +47,43 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-
-app.get("/", function (req, res) {
-  res.send(" Real time POS web app running.");
+app.get('/', (req, res) => {
+  res.send(' Real time POS web app running.');
 });
 
 
-
-app.post('/login', function (req, res) {
+app.post('/login', (req, res) => {
   userController.authenticate(req.body,
     (err, match) => {
       if (err) {
-        console.log(err)
+        console.log(err);
         res.end(JSON.stringify(err));
       } else if (match) {
-        console.log(match)
-        userController.signToken(req.body, res)
-      }
-      else {
-        console.log(match)
+        console.log(match);
+        userController.signToken(req.body, res);
+      } else {
+        console.log(match);
         res.end(JSON.stringify(match));
       }
-    }
-  )
+    });
 });
 
 
-
-app.post('/signup', function (req, res) {
+app.post('/signup', (req, res) => {
   userController.createUser(req.body, (err, success) => {
     if (err) {
-      console.log(err)
+      console.log(err);
       res.end(JSON.stringify(err));
     } else {
-      console.log(success)
+      console.log(success);
       res.end(JSON.stringify(success));
     }
-  })
+  });
 });
 
-app.get("/isAuthenticated", function (req, res) {
-  console.log("recieved")
-  userController.verifyToken(req.query.token, res)
+app.get('/isAuthenticated', (req, res) => {
+  console.log('recieved');
+  userController.verifyToken(req.query.token, res);
 });
 
 server.listen(port, () => console.log(`Listening on port ${port}`));

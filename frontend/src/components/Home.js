@@ -39,7 +39,7 @@ class Home extends Component {
   render() {
     return (
       <div>
-        <h1>PoS goes here</h1>
+        <h1>Order List</h1>
       </div>
     );
   }
