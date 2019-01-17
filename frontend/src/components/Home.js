@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 import Header from "./Header";
 import axios from 'axios';
+import Orders from './Orders'
 // API Address
 const HOST = "http://localhost:5500";
 
@@ -13,7 +14,7 @@ class Home extends Component {
         products: []
      }; 
   }
-  //Checkkkkk
+
   componentWillMount() {
     var token = localStorage.getItem('token')
     var self = this
@@ -40,6 +41,7 @@ class Home extends Component {
     return (
       <div>
         <h1>Order List</h1>
+        <Orders></Orders>
       </div>
     );
   }
