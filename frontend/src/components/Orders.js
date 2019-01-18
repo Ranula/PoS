@@ -1,8 +1,12 @@
 import React from "react";
-import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import * as orderActions from '../actions/order'
+import * as orderActions from '../actions/orderActions'
 import OrderList from './OrderList'
+import {getOrders} from '../actions/orderActions'
+import PropTypes from 'prop-types'
+import {Container,ListGroup, ListGroupItem, Button} from 'reactstrap'
+
+import OrderModal from './OrderModal'
 
 class Orders extends React.Component {
 
@@ -10,36 +14,37 @@ class Orders extends React.Component {
         super(props);
     }
 
-    render() {
+    componentDidMount(){
+        this.props.getOrders();
+    }
 
-        const orderDetails = this.props.order.map((item, idx) => {
-                return <li key={idx}>{item}</li>
-            });
-        
+    render() {
+        const openOrdersArray = this.props.order.openOrders.map(( {details_id, customer}) => {
+            return   <ListGroupItem key={details_id}> {customer}<OrderModal></OrderModal></ListGroupItem> 
+        });
         
         return (
-            <div>
-                <OrderList viewItem={this.props.action.viewOrder}></OrderList>
-                <h2>Order Details</h2>
-                <ul>
-                    {orderDetails}
-                </ul>
-            </div>
+            <Container>
+                <ListGroup>
+                        {openOrdersArray}
+                </ListGroup> 
+            </Container>
         );
     }
 
 }
 
-function mapStateToProps(state) {
-    return {
+
+Orders.prototypes ={
+    getItems: PropTypes.func.isRequired,
+    order: PropTypes.object.isRequired
+}
+
+
+const mapStateToProps = (state) => ({
         order: state.order
-    }
-}
+});
 
-function mapDispatchToProps(dispatch) {
-    return {
-        action: bindActionCreators(orderActions, dispatch)
-    }
-}
 
-export default connect(mapStateToProps, mapDispatchToProps)(Orders);
+
+export default connect(mapStateToProps, {getOrders})(Orders);

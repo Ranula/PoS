@@ -53,7 +53,7 @@ const comparePassword = (candidatePassword, hash, cb) => {
 exports.authenticate = (user, callback) => {
   // this.comparePassword("a","b",callback)
   nano.use('mylibrary').get(user.username).then((body) => {
-    console.log(body);
+    // console.log(body);
     comparePassword(user.password, body.password, callback);
   }).catch((err) => {
     callback(err, null);
@@ -76,7 +76,7 @@ exports.signToken = (user, res) => {
       console.log(err);
       res.end(JSON.stringify(err));
     } else {
-      console.log(token);
+      // console.log(token);
       res.jsonp({ success: true, token });
     }
   });
@@ -85,10 +85,10 @@ exports.signToken = (user, res) => {
 exports.verifyToken = (token, res) => {
   jwt.verify(token, SECRET, (err, decoded) => {
     if (err) {
-      console.log(err);
+      // console.log(err);
       res.send(false);
     } else {
-      console.log(decoded);
+      // console.log(decoded);
       res.send(true);
     }
   });

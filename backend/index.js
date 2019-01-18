@@ -22,6 +22,7 @@ const dbController = require('./src/dbHandler');
 
 const userController = require('./src/userController');
 
+const orderController = require('./src/orderController');
 
 dbController.CreateDB();
 console.log('Server started');
@@ -84,6 +85,19 @@ app.post('/signup', (req, res) => {
 app.get('/isAuthenticated', (req, res) => {
   console.log('recieved');
   userController.verifyToken(req.query.token, res);
+});
+
+app.get('/openOrders', (req, res) => {
+  orderController.getOrders(res, (err, success) => {
+    if (err) {
+      console.log(err);
+      res.end(JSON.stringify(err));
+    } else {
+      res.end(JSON.stringify(success.docs));
+    }
+  });
+  // const openOrders = [{ id: '1', name: 'bob' }, { id: '2', name: 'alice' }];
+  // res.send(JSON.stringify(openOrders));
 });
 
 server.listen(port, () => console.log(`Listening on port ${port}`));

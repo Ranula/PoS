@@ -1,0 +1,2 @@
+export const GET_ORDERS = 'GET_ORDERS'
+export const ORDERS_LOADING = 'ORDERS_LOADING'

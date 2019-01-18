@@ -7,13 +7,13 @@ import "bootstrap/dist/css/bootstrap.css";
 // import { makeRoutes } from "./routes";
 import App from "./App"
 import {Provider} from 'react-redux'
-import Store from './store'
+import store from './store'
 
-const storeInstance = Store();
+
 
 render(
     <BrowserRouter>
-    <Provider store= {storeInstance}>
+    <Provider store= {store}>
       <App />
       </Provider>
     </BrowserRouter>,

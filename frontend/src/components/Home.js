@@ -3,6 +3,8 @@ import "./App.css";
 import Header from "./Header";
 import axios from 'axios';
 import Orders from './Orders'
+import HomeNavbar from './HomeNavbar'
+import {Badge} from 'reactstrap'
 // API Address
 const HOST = "http://localhost:5500";
 
@@ -40,7 +42,8 @@ class Home extends Component {
   render() {
     return (
       <div>
-        <h1>Order List</h1>
+        <HomeNavbar />
+        <h1><Badge color="secondary">Open Orders</Badge></h1>
         <Orders></Orders>
       </div>
     );
