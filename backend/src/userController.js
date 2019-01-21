@@ -71,7 +71,7 @@ const getUser = (user, callback) => {
 
 
 exports.signToken = (user, res) => {
-  jwt.sign(user, SECRET, { expiresIn: '1m' }, (err, token) => {
+  jwt.sign(user, SECRET, { expiresIn: '1h' }, (err, token) => {
     if (err) {
       console.log(err);
       res.end(JSON.stringify(err));

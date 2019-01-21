@@ -6,7 +6,7 @@ exports.getOrders = (res, callback) => {
     selector: {
       status: { $eq: 1 },
     },
-    fields: ['customer', 'details_id', 'status']
+    fields: ['customer', 'details_id', 'status', 'items'],
   };
   nano.use('orders').find(q).then((doc) => {
     console.log('docs are printedddd', doc);

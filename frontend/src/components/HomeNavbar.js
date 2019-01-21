@@ -7,7 +7,8 @@ import {
     Nav,
     NavItem,
     NavLink,
-    Container } from 'reactstrap';
+    Container,
+Button } from 'reactstrap';
 
 class HomeNavbar extends Component {
     state ={
@@ -19,19 +20,24 @@ class HomeNavbar extends Component {
         })
     } 
 
+    logout(){
+        localStorage.clear();
+    }
+
     render(){
         return (
         <div>
             <Navbar color="dark" dark expand="sm" className="mb-5">
             <Container>
-                <NavbarBrand href="/Home">Home</NavbarBrand>
+                <NavbarBrand href="/Home">Point of Sales System</NavbarBrand>
                 <NavbarToggler onClick ={this.toggle}/>
                 <Collapse isOpen = {this.state.isOpen} navbar>
                 <Nav className="ml-auto" navbar>
-                </Nav>
                 <NavItem>
-                    <NavLink href = "/">LogOut</NavLink>
+                    <Button onClick={this.logout()} href = "/">LogOut</Button>
                 </NavItem>
+                </Nav>
+             
                 </Collapse>
             </Container>
             </Navbar>
