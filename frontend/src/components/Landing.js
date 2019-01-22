@@ -8,17 +8,23 @@ const HOST = "http://localhost:5500";
 class Landing extends Component {
   constructor(props) {
     super(props);
-    this.state = { products: [] };
+    this.state = { 
+      login: false,
+      signup: false 
+    };
   }
-  componentWillMount() {
+  componentDidMount() {
   }
 
   render() {
-    return (
-      <div>
-        <Header />
-      </div>
-    );
+    
+      return (
+        <div>
+          <Login></Login>
+        </div>
+      );
+    
+
   }
 }
 export default Landing;

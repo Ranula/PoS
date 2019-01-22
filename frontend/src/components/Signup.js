@@ -49,11 +49,12 @@ class Signup extends React.Component {
         <Header />
         <MDBContainer>
           <MDBRow>
+          <MDBCol md="3"></MDBCol>
             <MDBCol md="6">
               <form
                 onSubmit={this.handleSubmit}
               >
-                <p className="h5 text-center mb-4">Sign in</p>
+                <p className="h5 text-center mb-4">Sign Up</p>
                 <div className="grey-text">
                   <MDBInput
                     name="name"
@@ -95,7 +96,7 @@ class Signup extends React.Component {
 
                 </div>
                 <div className="text-center">
-                  <MDBBtn type="submit" color="primary">Register</MDBBtn>
+                  <MDBBtn type="submit" color="primary">Sign Up</MDBBtn>
                   {/* <input type="submit" value="Submit" /> */}
                 </div>
               </form>

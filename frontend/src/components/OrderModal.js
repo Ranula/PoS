@@ -1,205 +1,281 @@
-// import React, { Component } from 'react';
-// import {
-//   Button,
-//   Modal,
-//   ModalHeader,
-//   ModalBody,
-//   Form,
-//   FormGroup,
-//   Label,
-//   Input
-// } from 'reactstrap';
-// import { connect } from 'react-redux';
-// // import { addItem } from '../actions/itemActions';
 
-// class OrderModal extends Component {
-//   state = {
-//     modal: false,
-//     name: ''
-//   };
-
-//   toggle = () => {
-//     this.setState({
-//       modal: !this.state.modal
-//     });
-//   };
-
-//   onChange = e => {
-//     this.setState({ [e.target.name]: e.target.value });
-//   };
-
-//   onSubmit = e => {
-//     e.preventDefault();
-
-//     const newItem = {
-//       name: this.state.name
-//     };
-
-//     // Add item via addItem action
-//     this.props.addItem(newItem);
-
-//     // Close modal
-//     this.toggle();
-//   };
-
-//   render() {
-//     return (
-//       <div>
-//         <Button
-//           color="dark"
-//           style={{ marginBottom: '2rem' }}
-//           onClick={this.toggle}
-//         >
-//           Add Item
-//         </Button>
-
-//         <Modal isOpen={this.state.modal} toggle={this.toggle}>
-//           <ModalHeader toggle={this.toggle}>Add To Shopping List</ModalHeader>
-//           <ModalBody>
-//             <Form onSubmit={this.onSubmit}>
-//               <FormGroup>
-//                 <Label for="item">Item</Label>
-//                 <Input
-//                   type="text"
-//                   name="name"
-//                   id="item"
-//                   placeholder="Add shopping item"
-//                   onChange={this.onChange}
-//                 />
-//                 <Button color="dark" style={{ marginTop: '2rem' }} block>
-//                   Add Item
-//                 </Button>
-//               </FormGroup>
-//             </Form>
-//           </ModalBody>
-//         </Modal>
-//       </div>
-//     );
-//   }
-// }
-
-// const mapStateToProps = state => ({
-//   item: state.item
-// });
-
-// export default connect(
-//   mapStateToProps,
-//   {  }
-// )(OrderModal);
-
-import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
-import QuantityDropdown from './QuantityDropdown';
-import { runInThisContext } from 'vm';
+import React from "react";
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Table
+} from "reactstrap";
+import ItemsDropdown from "./ItemsDropdown";
 
 class OrderModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modal: false,
+      modal: false
     };
 
     this.toggle = this.toggle.bind(this);
+    this.addItem = this.addItem.bind(this);
+    this.removeNew = this.removeNew.bind(this);
+    this.setItemPrice = this.setItemPrice.bind(this);
   }
 
-  componentDidMount(){
-
-    this.setState ({
-      customer:this.props.customer,
+  componentDidMount() {
+    this.setState({
+      customer: this.props.customer,
       itemsArray: this.props.itemArray.items,
       addedItems: this.props.addedItems,
       orderId: this.props.orderId,
-      tableData: '',
-      total:''
+      tableData: "",
+      total: "",
+      newRows: []
     });
   }
 
   toggle() {
-    var dataProcessed = this.processData( this.props.itemArray.items, this.props.addedItems)
-    this.setPrice(dataProcessed)
-    // console.log(this.state)
+    var dataProcessed = this.processData(
+      this.props.itemArray.items,
+      this.props.addedItems
+    );
+    this.setPrice(dataProcessed);
+    console.log("TOGGLE");
     this.setState({
       modal: !this.state.modal,
-      tableData:dataProcessed
+      tableData: dataProcessed
     });
   }
 
-  processData(items,cart){
+  removeNew(e) {
+    let rowArray = this.state.newRows.filter(row => row.newRowId !== e);
+    this.setState({
+      newRows: rowArray
+    });
+  }
+
+  addItem() {
+    let newID = this.state.tableData.length + this.state.newRows.length + 1;
+    var newRow = (
+      <tr key={newID}>
+        <td>
+          <ItemsDropdown
+            setItemPrice={this.setItemPrice.bind(this)}
+            key={newID}
+            rowID={newID}
+            items={this.props.itemArray.items}
+          />
+        </td>
+        <td>item_price</td>
+        <td>quantity</td>
+        <td>price</td>
+        <td>
+          <Button size="sm" color="info">
+            Save
+          </Button>
+        </td>
+        <td>
+          <Button
+            id={newID}
+            onClick={() => {
+              this.removeNew(newID);
+            }}
+            size="sm"
+            color="danger"
+          >
+            X
+          </Button>
+        </td>
+      </tr>
+    );
+    let newRowObj = {
+      newRowId: newID,
+      newRow: newRow
+    };
+    let rows = this.state.newRows;
+
+    rows.push(newRowObj);
+    this.setState({
+      newRows: rows
+    });
+    // console.log(this.state.newRows)
+  }
+
+  processData(items, cart) {
     var finalArray = [];
-    let counter = 1
-    cart.forEach( (pair) => {
-      let name = items[parseInt(pair[0])-1].item_name;
-      let unitPrice = items[parseInt(pair[0])-1].item_price;
+    let counter = 1;
+    cart.forEach(pair => {
+      let name = items[parseInt(pair[0]) - 1].item_name;
+      let unitPrice = items[parseInt(pair[0]) - 1].item_price;
       let quantity = parseInt(pair[1]);
-      let price = unitPrice* quantity
+      let price = unitPrice * quantity;
       let dataObject = {
-        id:counter,
+        id: counter,
         item_name: name,
         item_price: unitPrice,
-        quantity:quantity,
-        price:price
-      }
+        quantity: quantity,
+        price: price
+      };
       // console.log(dataObject);
-      finalArray.push(dataObject)
-      counter ++;
+      finalArray.push(dataObject);
+      counter++;
     });
-    return finalArray
+    return finalArray;
   }
 
-  setPrice(dataObject){
+  setPrice(dataObject) {
     let total = 0;
-    dataObject.forEach((obj)=>{
-      total = total + obj.price
-    })
+    dataObject.forEach(obj => {
+      total = total + obj.price;
+    });
     this.setState({
-      total : total
-    })
+      total: total
+    });
+  }
+
+  setItemPrice(item, rowID) {
+    let itemPrice;
+    this.props.itemArray.items.map(({ item_id, item_price }) => {
+      if (item_id === item.value) {
+        itemPrice = item_price;
+      }
+    });
+
+    let updatedRowsObj = this.state.newRows.map(rowObj => {
+      if (rowObj.newRowId === rowID) {
+        var newRow = (
+          <tr key={rowID}>
+            <td>
+              <ItemsDropdown
+                setItemPrice={this.setItemPrice.bind(this)}
+                key={rowID}
+                rowID={rowID}
+                items={this.props.itemArray.items}
+              />
+            </td>
+            <td>{itemPrice}</td>
+            <td>quantity</td>
+            <td>price</td>
+            <td>
+              <Button size="sm" color="info">
+                Save
+              </Button>
+            </td>
+            <td>
+              <Button
+                id={rowID}
+                onClick={() => {
+                  this.removeNew(rowID);
+                }}
+                size="sm"
+                color="danger"
+              >
+                X
+              </Button>
+            </td>
+          </tr>
+        );
+
+
+        let newReturn = {
+          newRowId: rowID,
+          newRow: newRow
+        };
+        return newReturn;
+      } else {
+        return rowObj;
+      }
+    });
+    this.setState({
+      newRows: updatedRowsObj
+    });
+
   }
 
   render() {
-    let rowsArray = []
-    if (this.state.tableData){
-        rowsArray = this.state.tableData.map(( {id, item_name, item_price, quantity, price}) => {
-        return <tr key={id}><th scope="row">{id}</th><td>{item_name}</td><td>{item_price}</td><td>{quantity}</td><td>{price}</td><td><Button size="sm" color="danger">Remove</Button></td></tr>
+    let rowsArray = [];
+    if (this.state.tableData) {
+      rowsArray = this.state.tableData.map(
+        ({ id, item_name, item_price, quantity, price }) => {
+          return (
+            <tr key={id}>
+              <td>{item_name}</td>
+              <td>{item_price}</td>
+              <td>
+                <input type="number" value={quantity}></input>
+              {/* <CounterInput value={quantity} min={1} max={50} onChange={ (value) => { console.log(value) } } /> */}
+              
+              </td>
+              <td>{price}</td>
+              <td>
+                <Button size="sm" color="danger">
+                  Remove
+                </Button>
+              </td>
+            </tr>
+          );
+        }
+      );
+    }
+
+    let newRowsArray = [];
+    if (this.state.newRows) {
+      this.state.newRows.map(a => {
+        console.log(a);
+        newRowsArray.push(a.newRow);
       });
     }
-  
+
     return (
       <div>
         {/* <h1>{this.props.items}</h1> */}
-        <Button className="float-right" color="info" onClick={this.toggle}>View</Button>
-        <Modal size="lg" isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+        <Button className="float-right" color="info" onClick={this.toggle}>
+          View
+        </Button>
+        <Modal
+          size="lg"
+          isOpen={this.state.modal}
+          toggle={this.toggle}
+          className={this.props.className}
+        >
           <ModalHeader toggle={this.toggle}>
-          
-          <b>Customer: {this.state.customer} <br></br> OrderID: {this.state.orderId}</b>
-          
+            <b>
+              Customer: {this.state.customer} <br /> OrderID:{" "}
+              {this.state.orderId}
+            </b>
           </ModalHeader>
           <ModalBody>
-            
-
-          <Table striped>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Item Name</th>
-            <th>Unit Price ($)</th>
-            <th>Quantity</th>
-            <th>Price ($)</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {rowsArray}
-          <tr><th></th><th></th><th> Sub Total </th><th><b>{this.state.total} $</b></th></tr>
-        </tbody>
-      </Table>
-
-
-
+            <Table striped>
+              <thead>
+                <tr>
+                  <th>Item Name</th>
+                  <th>Unit Price ($)</th>
+                  <th>Quantity</th>
+                  <th>Price ($)</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {rowsArray}
+                {newRowsArray}
+                <tr>
+                  <th />
+                  <th> Sub Total </th>
+                  <th>
+                    <b>{this.state.total} $</b>
+                  </th>
+                </tr>
+              </tbody>
+            </Table>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.toggle}>Do Something</Button>{' '}
-            <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+            <Button color="primary" onClick={this.addItem}>
+              Add Item
+            </Button>{" "}
+            <Button color="secondary" onClick={this.toggle}>
+              Save
+            </Button>
           </ModalFooter>
         </Modal>
       </div>
