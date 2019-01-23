@@ -9,9 +9,10 @@ import {
 } from "reactstrap";
 import ItemsDropdown from "./ItemsDropdown";
 import QuantityHandler from "./QuantityHandler";
+import { connect } from 'react-redux';
+import { updateOrder } from '../actions/orderActions';
 
 class OrderModal extends React.Component {
-  
   constructor(props) {
     super(props);
     this.state = {
@@ -53,6 +54,11 @@ class OrderModal extends React.Component {
         this.setPrice();
       }
     );
+    let objToSave = {
+      "orderID": this.props.orderId,
+      "payload": this.state.tableData
+    }
+    this.props.updateOrder(objToSave);
   }
 
   removeNew(e) {
@@ -207,35 +213,45 @@ class OrderModal extends React.Component {
     }
   }
 
-  validateRowTobeSaved(obj){
-    if( obj.id && obj.item_name && obj.price && obj.item_price && obj.quantity && obj.item_id){
-      return true
-    }else{
-      return false
+  validateRowTobeSaved(obj) {
+    if (
+      obj.id &&
+      obj.item_name &&
+      obj.price &&
+      obj.item_price &&
+      obj.quantity &&
+      obj.item_id
+    ) {
+      return true;
+    } else {
+      return false;
     }
   }
-  saveLocal(e){
+  saveLocal(e) {
     let objToSave;
     let updatedTableData = this.state.tableData;
     this.state.newRowsData.forEach(obj => {
-      if(obj.id === e && this.validateRowTobeSaved(obj) ){
-        objToSave = obj
+      if (obj.id === e && this.validateRowTobeSaved(obj)) {
+        objToSave = obj;
       }
     });
-    if(objToSave){
-      updatedTableData.push(objToSave)
+    if (objToSave) {
+      updatedTableData.push(objToSave);
       this.removeNew(e);
-      this.setState({
-        tableData: updatedTableData
-      }, () =>{
-        this.setPrice()
-      })
-    }else{
-      console.log("Adding Failed")
+      this.setState(
+        {
+          tableData: updatedTableData
+        },
+        () => {
+          this.setPrice();
+        }
+      );
+    } else {
+      console.log("Adding Failed");
     }
   }
 
-  removeGlobal(e){
+  removeGlobal(e) {
     let rowArray = this.state.tableData.filter(row => row.id !== e);
     this.setState(
       {
@@ -267,9 +283,13 @@ class OrderModal extends React.Component {
               </td>
               <td>{price}</td>
               <td>
-                <Button size="sm" color="danger" onClick={() => {
+                <Button
+                  size="sm"
+                  color="danger"
+                  onClick={() => {
                     this.removeGlobal(id);
-                  }}>
+                  }}
+                >
                   Remove
                 </Button>
               </td>
@@ -403,4 +423,8 @@ class OrderModal extends React.Component {
   }
 }
 
-export default OrderModal;
+const mapStateToProps = state => ({
+  order: state.order
+});
+
+export default connect( mapStateToProps, {updateOrder} )(OrderModal);

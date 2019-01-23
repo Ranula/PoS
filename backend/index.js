@@ -90,4 +90,14 @@ app.get('/getItems', (req, res) => {
   });
 });
 
+app.post('/updateOrder', (req, res) => {
+  orderController.updateOrder(req, res, (err, success) => {
+    if (err) {
+      res.end(JSON.stringify(err));
+    } else {
+      res.end(JSON.stringify(success));
+    }
+  });
+});
+
 server.listen(port, () => console.log(`Listening on port ${port}`));
