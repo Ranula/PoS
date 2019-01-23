@@ -7,12 +7,14 @@ class ItemsDropdown extends React.Component {
   }
 
   componentDidMount(){
-    // console.log();
+    console.log("props from item dropdown",this.props.selectedItem);
     if (this.props.selectedItem){
       this.setState({
         selectedOption: this.props.selectedItem
       })
     }
+
+    console.log("selectedoptionisss",this.state.selectedOption)
   }
 
   setOptionsList = (items) => {
@@ -24,7 +26,7 @@ class ItemsDropdown extends React.Component {
   
   handleChange = (selectedOption) => {
     this.setState({ selectedOption });
-    console.log(`Option selected:`, selectedOption.value);
+    console.log(`Option selected:`, selectedOption);
     this.props.setItemPrice(selectedOption,this.props.rowID)
   }
 

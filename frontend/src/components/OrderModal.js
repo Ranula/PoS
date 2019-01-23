@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Button,
@@ -9,8 +8,10 @@ import {
   Table
 } from "reactstrap";
 import ItemsDropdown from "./ItemsDropdown";
+import QuantityHandler from "./QuantityHandler";
 
 class OrderModal extends React.Component {
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -21,6 +22,7 @@ class OrderModal extends React.Component {
     this.addItem = this.addItem.bind(this);
     this.removeNew = this.removeNew.bind(this);
     this.setItemPrice = this.setItemPrice.bind(this);
+    this.quantityChange = this.quantityChange.bind(this);
   }
 
   componentDidMount() {
@@ -29,9 +31,10 @@ class OrderModal extends React.Component {
       itemsArray: this.props.itemArray.items,
       addedItems: this.props.addedItems,
       orderId: this.props.orderId,
-      tableData: "",
+      tableData: [],
       total: "",
-      newRows: []
+      newRows: [],
+      newRowsData: []
     });
   }
 
@@ -40,66 +43,46 @@ class OrderModal extends React.Component {
       this.props.itemArray.items,
       this.props.addedItems
     );
-    this.setPrice(dataProcessed);
     console.log("TOGGLE");
-    this.setState({
-      modal: !this.state.modal,
-      tableData: dataProcessed
-    });
+    this.setState(
+      {
+        modal: !this.state.modal,
+        tableData: dataProcessed
+      },
+      () => {
+        this.setPrice();
+      }
+    );
   }
 
   removeNew(e) {
-    let rowArray = this.state.newRows.filter(row => row.newRowId !== e);
-    this.setState({
-      newRows: rowArray
-    });
+    let rowArray = this.state.newRowsData.filter(row => row.id !== e);
+    this.setState(
+      {
+        newRowsData: rowArray
+      },
+      () => {
+        this.setPrice();
+      }
+    );
   }
 
   addItem() {
-    let newID = this.state.tableData.length + this.state.newRows.length + 1;
-    var newRow = (
-      <tr key={newID}>
-        <td>
-          <ItemsDropdown
-            setItemPrice={this.setItemPrice.bind(this)}
-            key={newID}
-            rowID={newID}
-            items={this.props.itemArray.items}
-          />
-        </td>
-        <td>item_price</td>
-        <td>quantity</td>
-        <td>price</td>
-        <td>
-          <Button size="sm" color="info">
-            Save
-          </Button>
-        </td>
-        <td>
-          <Button
-            id={newID}
-            onClick={() => {
-              this.removeNew(newID);
-            }}
-            size="sm"
-            color="danger"
-          >
-            X
-          </Button>
-        </td>
-      </tr>
-    );
-    let newRowObj = {
-      newRowId: newID,
-      newRow: newRow
+    let newID = this.state.tableData.length + this.state.newRowsData.length + 1;
+    let dataObject = {
+      id: newID,
+      item_name: null,
+      item_id: null,
+      item_price: null,
+      quantity: null,
+      price: null
     };
-    let rows = this.state.newRows;
+    let updatedDataArray = this.state.newRowsData;
+    updatedDataArray.push(dataObject);
 
-    rows.push(newRowObj);
     this.setState({
-      newRows: rows
+      newRowsData: updatedDataArray
     });
-    // console.log(this.state.newRows)
   }
 
   processData(items, cart) {
@@ -107,11 +90,13 @@ class OrderModal extends React.Component {
     let counter = 1;
     cart.forEach(pair => {
       let name = items[parseInt(pair[0]) - 1].item_name;
+      let item_ID = parseInt(pair[0]);
       let unitPrice = items[parseInt(pair[0]) - 1].item_price;
       let quantity = parseInt(pair[1]);
       let price = unitPrice * quantity;
       let dataObject = {
         id: counter,
+        item_id: item_ID,
         item_name: name,
         item_price: unitPrice,
         quantity: quantity,
@@ -124,9 +109,19 @@ class OrderModal extends React.Component {
     return finalArray;
   }
 
-  setPrice(dataObject) {
+  setPrice() {
     let total = 0;
-    dataObject.forEach(obj => {
+    console.log(
+      "setPrice called",
+      this.state.tableData,
+      this.state.newRowsData
+    );
+    this.state.tableData.forEach(obj => {
+      console.log(obj);
+      total = total + obj.price;
+    });
+
+    this.state.newRowsData.forEach(obj => {
       total = total + obj.price;
     });
     this.setState({
@@ -136,64 +131,124 @@ class OrderModal extends React.Component {
 
   setItemPrice(item, rowID) {
     let itemPrice;
-    this.props.itemArray.items.map(({ item_id, item_price }) => {
+    let itemId;
+    let itemName;
+    this.props.itemArray.items.map(({ item_id, item_price, item_name }) => {
       if (item_id === item.value) {
         itemPrice = item_price;
+        itemId = item_id;
+        itemName = item_name;
       }
     });
-
-    let updatedRowsObj = this.state.newRows.map(rowObj => {
-      if (rowObj.newRowId === rowID) {
-        var newRow = (
-          <tr key={rowID}>
-            <td>
-              <ItemsDropdown
-                setItemPrice={this.setItemPrice.bind(this)}
-                key={rowID}
-                rowID={rowID}
-                items={this.props.itemArray.items}
-              />
-            </td>
-            <td>{itemPrice}</td>
-            <td>quantity</td>
-            <td>price</td>
-            <td>
-              <Button size="sm" color="info">
-                Save
-              </Button>
-            </td>
-            <td>
-              <Button
-                id={rowID}
-                onClick={() => {
-                  this.removeNew(rowID);
-                }}
-                size="sm"
-                color="danger"
-              >
-                X
-              </Button>
-            </td>
-          </tr>
-        );
-
-
-        let newReturn = {
-          newRowId: rowID,
-          newRow: newRow
-        };
-        return newReturn;
-      } else {
-        return rowObj;
-      }
-    });
+    let updatedRowsData = [];
+    if (this.state.newRowsData) {
+      updatedRowsData = this.state.newRowsData.map(rowObj => {
+        if (rowObj.id === rowID) {
+          // let newPrice = quantity * rowObj.item_price;
+          rowObj.item_price = itemPrice;
+          rowObj.item_id = itemId;
+          rowObj.item_name = itemName;
+          return rowObj;
+        } else {
+          return rowObj;
+        }
+      });
+    }
     this.setState({
-      newRows: updatedRowsObj
+      newTableData: updatedRowsData
     });
+  }
 
+  quantityChange(quantity, rowID, type) {
+    if (type === "saved") {
+      let newTableData = [];
+      if (this.state.tableData) {
+        newTableData = this.state.tableData.map(rowObj => {
+          if (rowObj.id === rowID) {
+            let newPrice = quantity * rowObj.item_price;
+            rowObj.price = newPrice;
+            rowObj.quantity = quantity;
+            return rowObj;
+          } else {
+            return rowObj;
+          }
+        });
+      }
+      this.setState(
+        {
+          tableData: newTableData
+        },
+        () => {
+          this.setPrice();
+        }
+      );
+    } else if (type === "new") {
+      let newTableData = [];
+      if (this.state.tableData) {
+        newTableData = this.state.newRowsData.map(rowObj => {
+          if (rowObj.id === rowID) {
+            let newPrice = quantity * rowObj.item_price;
+            rowObj.quantity = quantity;
+            rowObj.price = newPrice;
+            return rowObj;
+          } else {
+            return rowObj;
+          }
+        });
+      }
+      this.setState(
+        {
+          newRowsData: newTableData
+        },
+        () => {
+          this.setPrice();
+        }
+      );
+    }
+  }
+
+  validateRowTobeSaved(obj){
+    if( obj.id && obj.item_name && obj.price && obj.item_price && obj.quantity && obj.item_id){
+      return true
+    }else{
+      return false
+    }
+  }
+  saveLocal(e){
+    let objToSave;
+    let updatedTableData = this.state.tableData;
+    this.state.newRowsData.forEach(obj => {
+      if(obj.id === e && this.validateRowTobeSaved(obj) ){
+        objToSave = obj
+      }
+    });
+    if(objToSave){
+      updatedTableData.push(objToSave)
+      this.removeNew(e);
+      this.setState({
+        tableData: updatedTableData
+      }, () =>{
+        this.setPrice()
+      })
+    }else{
+      console.log("Adding Failed")
+    }
+  }
+
+  removeGlobal(e){
+    let rowArray = this.state.tableData.filter(row => row.id !== e);
+    this.setState(
+      {
+        tableData: rowArray
+      },
+      () => {
+        this.setPrice();
+      }
+    );
   }
 
   render() {
+    //Set initial rows from the database
     let rowsArray = [];
     if (this.state.tableData) {
       rowsArray = this.state.tableData.map(
@@ -203,13 +258,18 @@ class OrderModal extends React.Component {
               <td>{item_name}</td>
               <td>{item_price}</td>
               <td>
-                <input type="number" value={quantity}></input>
-              {/* <CounterInput value={quantity} min={1} max={50} onChange={ (value) => { console.log(value) } } /> */}
-              
+                <QuantityHandler
+                  rowID={id}
+                  type="saved"
+                  quantityChange={this.quantityChange.bind(this)}
+                  selectedQuantity={quantity}
+                />
               </td>
               <td>{price}</td>
               <td>
-                <Button size="sm" color="danger">
+                <Button size="sm" color="danger" onClick={() => {
+                    this.removeGlobal(id);
+                  }}>
                   Remove
                 </Button>
               </td>
@@ -219,12 +279,72 @@ class OrderModal extends React.Component {
       );
     }
 
+    //Handle newly added rows
     let newRowsArray = [];
-    if (this.state.newRows) {
-      this.state.newRows.map(a => {
-        console.log(a);
-        newRowsArray.push(a.newRow);
-      });
+    if (this.state.newRowsData) {
+      newRowsArray = this.state.newRowsData.map(
+        ({ id, item_name, item_id, item_price, quantity, price }) => {
+          console.log("Render eke", {
+            id,
+            item_name,
+            item_id,
+            item_price,
+            quantity,
+            price
+          });
+          return (
+            <tr key={id}>
+              <td>
+                {" "}
+                <ItemsDropdown
+                  setItemPrice={this.setItemPrice.bind(this)}
+                  key={id}
+                  rowID={id}
+                  items={this.props.itemArray.items}
+                  selectedItem={{ value: item_id, label: item_name }}
+                />
+              </td>
+              <td>{item_price ? item_price : "item_price"}</td>
+              <td>
+                {item_name ? (
+                  <QuantityHandler
+                    rowID={id}
+                    type="new"
+                    quantityChange={this.quantityChange.bind(this)}
+                    selectedQuantity={quantity}
+                  />
+                ) : (
+                  "quantity"
+                )}
+              </td>
+              <td>{price ? price : "price"}</td>
+              <td>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    this.saveLocal(id);
+                  }}
+                  color="info"
+                >
+                  Save
+                </Button>
+              </td>
+              <td>
+                <Button
+                  id={id}
+                  onClick={() => {
+                    this.removeNew(id);
+                  }}
+                  size="sm"
+                  color="danger"
+                >
+                  X
+                </Button>
+              </td>
+            </tr>
+          );
+        }
+      );
     }
 
     return (
