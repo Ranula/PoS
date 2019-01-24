@@ -4,10 +4,13 @@ import Header from "./Header";
 import axios from "axios";
 import { Container, Row, Col } from "reactstrap";
 
+import { withAlert } from 'react-alert'
+
 // API Address
 const HOST = "http://localhost:5500";
 
 class Login extends React.Component {
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -21,7 +24,7 @@ class Login extends React.Component {
     var values = event.target.elements;
     let uName = values.usermail.value;
     let uPassword = values.userpassword.value;
-
+    let self = this;
     axios
       .post(HOST + "/login", {
         username: uName,
@@ -30,9 +33,10 @@ class Login extends React.Component {
       .then(function(response) {
         console.log(response);
         if (response.data.success) {
+          console.log(self.props)
           localStorage.setItem("token", response.data.token);
-          window.alert("Login successful");
-          window.open("/Home", "_self");
+          self.props.alert.error("Login Failed").then(window.open("/Home", "_self"))
+          
         } else {
           window.alert("Login Failed");
         }
@@ -88,4 +92,4 @@ class Login extends React.Component {
     );
   }
 }
-export default Login;
+export default withAlert(Login);

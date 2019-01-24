@@ -8,14 +8,26 @@ import "bootstrap/dist/css/bootstrap.css";
 import App from "./App"
 import {Provider} from 'react-redux'
 import store from './store'
+import { Provider as AlertProvider } from 'react-alert'
+import AlertTemplate from 'react-alert-template-basic'
+
+const options = {
+  position: 'top center',
+  timeout: 2000,
+  offset: '30px',
+  transition: 'scale'
+}
 
 
 
 render(
+ 
     <BrowserRouter>
+     <AlertProvider template={AlertTemplate} {...options}>
     <Provider store= {store}>
       <App />
       </Provider>
+    </AlertProvider>
     </BrowserRouter>,
     document.getElementById("root")
   );

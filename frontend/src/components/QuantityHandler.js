@@ -33,7 +33,12 @@ class QuantityHandler extends React.Component {
     // const options = this.setOptionsList(this.props.items)
 
     return (
-      <NumericInput min={0} max={100} onChange={this.handleChange} value={selectedQuantity}/>
+      <NumericInput style={{
+        input: {
+          maxWidth: '10ex',
+          height: '3.5ex'
+        }
+      }} min={0} max={100} onChange={this.handleChange} value={selectedQuantity}/>
     );
   }
 }

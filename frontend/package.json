@@ -5,9 +5,12 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.2.1",
+    "lodash": "^4.17.11",
     "mdbreact": "^4.8.7",
     "rc-input-number": "^4.3.8",
     "react": "^16.7.0",
+    "react-alert": "^4.0.4",
+    "react-alert-template-basic": "^1.0.0",
     "react-bootstrap-counter": "^1.0.1",
     "react-dom": "^16.7.0",
     "react-numeric-input": "^2.2.3",

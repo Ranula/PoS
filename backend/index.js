@@ -91,6 +91,7 @@ app.get('/getItems', (req, res) => {
 });
 
 app.post('/updateOrder', (req, res) => {
+  console.log('Update Order with', req.body);
   orderController.updateOrder(req, res, (err, success) => {
     if (err) {
       res.end(JSON.stringify(err));

@@ -1,6 +1,7 @@
 const config = require('../config.json');
 const nano = require('nano')(config.dbString);
 
+// Get orders which are open
 exports.getOrders = (res, callback) => {
   const q = {
     selector: {
@@ -8,14 +9,18 @@ exports.getOrders = (res, callback) => {
     },
     fields: ['customer', 'details_id', 'status', 'items'],
   };
-  nano.use('orders').find(q).then((doc) => {
-    console.log('docs are printedddd', doc);
-    callback(null, doc);
-  }).catch((err) => {
-    callback(err, null);
-  });
+  nano
+    .use('orders')
+    .find(q)
+    .then((doc) => {
+      callback(null, doc);
+    })
+    .catch((err) => {
+      callback(err, null);
+    });
 };
 
+// Support function to perform a update in couchDB (Data Processing function)
 const setOrderItems = (obj, callback) => {
   const itemsArray = obj.payload.map(({ item_id, quantity }) => {
     const minItemArray = [];
@@ -30,53 +35,52 @@ const setOrderItems = (obj, callback) => {
   callback(newOrderobj);
 };
 
+// Update Order and send updated open orders
+
 exports.updateOrder = (req, res, callback) => {
-  // console.log(req.body);
-
-
-  const q = {
+  const query = {
     selector: {
       details_id: { $eq: req.body.orderID },
     },
-    // fields: ['_', 'details_id', 'status', 'items'],
   };
-  nano.use('orders').find(q).then((doc) => {
-
-    setOrderItems(req.body, (newOrderobj) => {
-      let dummyObj = newOrderobj;
-      dummyObj._rev = doc.docs[0]._rev;
-      dummyObj.status = doc.docs[0].status;
-      dummyObj.details_id = doc.docs[0].details_id;
-      dummyObj.customer = doc.docs[0].customer;
-
-      // console.log('newOrderobj printedddd', dummyObj);
-
-
-      nano.use('orders').insert(dummyObj, doc.docs[0]._id, (err, body) => {
-        if (err) {
-          // callback(err, null);
-          console.log("Insert Error",err);
-        } else {
-          // callback(null, body);
-          console.log("insert success", body);
-
-
-
-          const q1 = {
-            selector: {
-              status: { $eq: 1 },
-            },
-            fields: ['customer', 'details_id', 'status', 'items'],
-          };
-          nano.use('orders').find(q1).then((doc1) => {
-            callback(null, doc1);
-          }).catch((err1) => {
-            callback(err1, null);
-          });
-        }
+  // Performing a find to capture the _rev
+  nano
+    .use('orders')
+    .find(query)
+    .then((doc) => {
+      setOrderItems(req.body, (newOrderobj) => {
+        const dummyObj = newOrderobj;
+        dummyObj._rev = doc.docs[0]._rev;
+        dummyObj.status = doc.docs[0].status;
+        dummyObj.details_id = doc.docs[0].details_id;
+        dummyObj.customer = doc.docs[0].customer;
+        const orderId = doc.docs[0]._id;
+        // Inserting new order details
+        nano.use('orders').insert(dummyObj, orderId, (err, body) => {
+          if (err) {
+            callback(err, null);
+          } else {
+            const query1 = {
+              selector: {
+                status: { $eq: 1 },
+              },
+              fields: ['customer', 'details_id', 'status', 'items'],
+            };
+            // Retriving and sending new orders which are open
+            nano
+              .use('orders')
+              .find(query1)
+              .then((doc1) => {
+                callback(null, doc1);
+              })
+              .catch((err1) => {
+                callback(err1, null);
+              });
+          }
+        });
       });
+    })
+    .catch((err) => {
+      callback(err, null);
     });
-  }).catch((err) => {
-    // callback(err, null);
-  });
 };

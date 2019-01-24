@@ -27,7 +27,7 @@ export const updateOrder = (order) => dispatch => {
 
     axios.post(HOST+'/updateOrder',order)
     .then(res => {
-        console.log("NOTEDDDDDDDDDDD",res.data)
+        // console.log("NOTEDDDDDDDDDDD",res.data)
         dispatch( {
         type: UPDATE_ORDER,
         payload: res.data.docs

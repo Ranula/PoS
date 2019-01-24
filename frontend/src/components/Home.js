@@ -5,6 +5,7 @@ import axios from 'axios';
 import Orders from './Orders'
 import HomeNavbar from './HomeNavbar'
 import {Badge} from 'reactstrap'
+import { withAlert } from 'react-alert'
 // API Address
 const HOST = "http://localhost:5500";
 
@@ -27,8 +28,10 @@ class Home extends Component {
             self.setState({
                 isLoggedIn:false,
           })
+          self.props.alert.error("Authentication Failed")
           window.open("/login", "_self")
         }else{
+            self.props.alert.success("Authentication Successfull")
             self.setState({
                 isLoggedIn:true,
           })
@@ -49,4 +52,4 @@ class Home extends Component {
     );
   }
 }
-export default Home;
+export default withAlert( Home);
