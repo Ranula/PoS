@@ -1,8 +1,8 @@
 
-const config = require("../config.json");
-const nano = require("nano")(config.dbString);
-const bycrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const config = require('../config.json');
+const nano = require('nano')(config.dbString);
+const bycrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const SECRET = 'shush';
 
