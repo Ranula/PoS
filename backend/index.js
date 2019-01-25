@@ -165,7 +165,12 @@ app.post('/login', (req, res) => {
       if (err) {
         res.end(JSON.stringify(err));
       } else if (match) {
-        userController.signToken(req.body, res);
+        userController.signToken(req.body, (err2, token) => {
+          if (err) {
+            res.end(JSON.stringify(err2));
+          }
+          res.jsonp({ success: true, token });
+        });
       } else {
         res.end(JSON.stringify(match));
       }
@@ -225,7 +230,12 @@ app.post('/signup', (req, res) => {
  *           $ref: '#/definitions/success'
  */
 app.get('/isAuthenticated', (req, res) => {
-  userController.verifyToken(req.query.token, res);
+  userController.verifyToken(req.query.token, (err, decode) => {
+    if (err) {
+      res.send(false);
+    }
+    res.send(true);
+  });
 });
 
 /**

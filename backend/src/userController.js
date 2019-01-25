@@ -1,28 +1,29 @@
-
+// eslint-disable-next-line import/order
 const config = require('../config.json');
 const nano = require('nano')(config.dbString);
 const bycrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+
 const SECRET = 'shush';
 
-const isAuth = (req, res, next) => {
-  const token = req.get('token');
-  if (token) {
-    jwt.verify(token, SECRET, (err, data) => {
-      if (err) {
-        req.isAuthenticated = false;
-      } else {
-        req.isAuthenticated = true;
-        req.user = data;
-      }
-      next();
-    });
-  } else {
-    req.isAuthenticated = false;
-    next();
-  }
-};
+// const isAuth = (req, res, next) => {
+//   const token = req.get('token');
+//   if (token) {
+//     jwt.verify(token, SECRET, (err, data) => {
+//       if (err) {
+//         req.isAuthenticated = false;
+//       } else {
+//         req.isAuthenticated = true;
+//         req.user = data;
+//       }
+//       next();
+//     });
+//   } else {
+//     req.isAuthenticated = false;
+//     next();
+//   }
+// };
 
 exports.createUser = (newUser, callback) => {
   bycrypt.genSalt(10, (err, salt) => {
@@ -65,40 +66,36 @@ exports.authenticate = (user, callback) => {
     });
 };
 
-const getUser = (user, callback) => {
-  // this.comparePassword("a","b",callback)
-  nano
-    .use('mylibrary')
-    .get(user.username)
-    .then((body) => {
-      console.log(body);
-    })
-    .catch((err) => {
-      callback(err, null);
-    });
-};
+// const getUser = (user, callback) => {
+//   // this.comparePassword("a","b",callback)
+//   nano
+//     .use('mylibrary')
+//     .get(user.username)
+//     .then((body) => {
+//       console.log(body);
+//     })
+//     .catch((err) => {
+//       callback(err, null);
+//     });
+// };
 
-exports.signToken = (user, res) => {
+exports.signToken = (user, callback) => {
   jwt.sign(user, SECRET, { expiresIn: '1h' }, (err, token) => {
     if (err) {
-      console.log(err);
-      res.end(JSON.stringify(err));
+      callback(err, null);
     } else {
-      // console.log(token);
-      res.jsonp({ success: true, token });
+      callback(null, token);
     }
   });
 };
 
-exports.verifyToken = (token, res) => {
+exports.verifyToken = (token, callback) => {
   jwt.verify(token, SECRET, (err, decoded) => {
     if (err) {
-      // console.log(err);
-      res.send(false);
+      callback(err, null);
     } else {
-      // console.log(decoded);
-      res.send(true);
+      callback(null, decoded);
     }
   });
 };
-exports.summ = (a, b) => a + b;
+
