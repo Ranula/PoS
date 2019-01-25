@@ -45,7 +45,7 @@ class OrderModal extends React.Component {
     });
   }
 
-
+// Perrform on Modal open and auto close
   toggle() {
     
     var dataProcessed = this.processData(
@@ -83,6 +83,7 @@ class OrderModal extends React.Component {
     console.log("TOGGLE");
   }
 
+  // Save order to the DB and show an alert
   saveOrder() {
     let objToSave = {
       orderID: this.props.orderId,
@@ -94,6 +95,7 @@ class OrderModal extends React.Component {
     console.log(this.props.alert)
   }
 
+  // Save order and close the modal on "X" click
   saveOrderandClose() {
     this.setState(
       {
@@ -110,6 +112,7 @@ class OrderModal extends React.Component {
     );
   }
 
+  // Remove a newly added row(item) before saving
   removeNew(e) {
     let rowArray = this.state.newRowsData.filter(row => row.id !== e);
     this.setState(
@@ -122,6 +125,7 @@ class OrderModal extends React.Component {
     );
   }
 
+  // Add a new item to the order
   addItem() {
     let newID = this.state.tableData.length + this.state.newRowsData.length + 1;
     let dataObject = {
@@ -140,6 +144,7 @@ class OrderModal extends React.Component {
     });
   }
 
+  // Support function to map item ids to names
   processData(items, cart) {
     var finalArray = [];
     let counter = 1;
@@ -168,6 +173,7 @@ class OrderModal extends React.Component {
     return finalArray;
   }
 
+  // Calculate Total
   setPrice() {
     let total = 0;
     console.log(
@@ -188,6 +194,7 @@ class OrderModal extends React.Component {
     });
   }
 
+  // Set Item price based on the selected Item
   setItemPrice(item, rowID) {
     let itemPrice;
     let itemId;
@@ -203,7 +210,6 @@ class OrderModal extends React.Component {
     if (this.state.newRowsData) {
       updatedRowsData = this.state.newRowsData.map(rowObj => {
         if (rowObj.id === rowID) {
-          // let newPrice = quantity * rowObj.item_price;
           rowObj.item_price = itemPrice;
           rowObj.item_id = itemId;
           rowObj.item_name = itemName;
@@ -218,6 +224,7 @@ class OrderModal extends React.Component {
     });
   }
 
+  // On change of the Quantity Handler
   quantityChange(quantity, rowID, type) {
     if (type === "saved") {
       let newTableData = [];
@@ -266,6 +273,7 @@ class OrderModal extends React.Component {
     }
   }
 
+  // Validate Data before Saving to DB
   validateRowTobeSaved(obj) {
     if (
       obj.id &&
@@ -280,6 +288,8 @@ class OrderModal extends React.Component {
       return false;
     }
   }
+
+  //Save locally in the state
   saveLocal(e) {
     let objToSave;
     let updatedTableData = this.state.tableData;
@@ -304,6 +314,7 @@ class OrderModal extends React.Component {
     }
   }
 
+  //Remove from the state to change through Save function
   removeGlobal(e) {
     let rowArray = this.state.tableData.filter(row => row.id !== e);
     this.setState(
@@ -469,6 +480,7 @@ class OrderModal extends React.Component {
     );
   }
 }
+
 OrderModal.prototypes ={
   getOrders: PropTypes.func.isRequired,
   getItems: PropTypes.func.isRequired,

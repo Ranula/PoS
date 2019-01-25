@@ -18,10 +18,7 @@ const options = {
   transition: 'scale'
 }
 
-
-
 render(
- 
     <BrowserRouter>
      <AlertProvider template={AlertTemplate} {...options}>
     <Provider store= {store}>
