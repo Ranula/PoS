@@ -21,7 +21,7 @@ exports.getOrders = (res, callback) => {
 };
 
 // Support function to perform a update in couchDB (Data Processing function)
-const setOrderItems = (obj, callback) => {
+exports.setOrderItems = (obj, callback) => {
   const itemsArray = obj.payload.map(({ item_id, quantity }) => {
     const minItemArray = [];
     minItemArray.push(String(item_id));
@@ -48,7 +48,8 @@ exports.updateOrder = (req, res, callback) => {
     .use('orders')
     .find(query)
     .then((doc) => {
-      setOrderItems(req.body, (newOrderobj) => {
+      // console.log(doc);
+      this.setOrderItems(req.body, (newOrderobj) => {
         const dummyObj = newOrderobj;
         dummyObj._rev = doc.docs[0]._rev;
         dummyObj.status = doc.docs[0].status;
