@@ -92,8 +92,10 @@ exports.signToken = (user, callback) => {
 exports.verifyToken = (token, callback) => {
   jwt.verify(token, SECRET, (err, decoded) => {
     if (err) {
+      console.log("verify Error");
       callback(err, null);
     } else {
+      console.log("verify success");
       callback(null, decoded);
     }
   });

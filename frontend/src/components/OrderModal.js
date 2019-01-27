@@ -1,5 +1,9 @@
 import React from "react";
 import {
+  Row,
+  Col,
+  Container,
+  Badge,
   Button,
   Modal,
   ModalHeader,
@@ -11,9 +15,9 @@ import ItemsDropdown from "./ItemsDropdown";
 import QuantityHandler from "./QuantityHandler";
 import { connect } from "react-redux";
 import { updateOrder } from "../actions/orderActions";
-import {PropTypes} from 'prop-types'
+import { PropTypes } from "prop-types";
 import lodash from "lodash";
-import { withAlert } from 'react-alert'
+import { withAlert } from "react-alert";
 
 class OrderModal extends React.Component {
   constructor(props) {
@@ -32,7 +36,6 @@ class OrderModal extends React.Component {
   }
 
   componentDidMount() {
-
     this.setState({
       customer: this.props.customer,
       itemsArray: this.props.itemArray.items,
@@ -45,15 +48,14 @@ class OrderModal extends React.Component {
     });
   }
 
-// Perrform on Modal open and auto close
+  // Perrform on Modal open and auto close
   toggle() {
-    
     var dataProcessed = this.processData(
       this.props.itemArray.items,
       this.props.addedItems
     );
 
-    if ( this.state.tableData === null ) {
+    if (this.state.tableData === null) {
       console.log("Equal");
       this.setState(
         {
@@ -64,20 +66,20 @@ class OrderModal extends React.Component {
           this.setPrice();
         }
       );
-    } 
+    }
     // if(lodash.isEqual(this.state.tableData, dataProcessed))
     else {
-    console.log("Not Equal");
-    this.setState(
-      {
-        modal: !this.state.modal,
-        // tableData: dataProcessed
-      },
-      () => {
-        this.saveOrder();
-        this.setPrice();
-      }
-    );
+      console.log("Not Equal");
+      this.setState(
+        {
+          modal: !this.state.modal
+          // tableData: dataProcessed
+        },
+        () => {
+          this.saveOrder();
+          this.setPrice();
+        }
+      );
     }
 
     console.log("TOGGLE");
@@ -90,9 +92,9 @@ class OrderModal extends React.Component {
       payload: this.state.tableData
     };
     this.props.updateOrder(objToSave);
-    console.log(this.props.alert)
-    this.props.alert.success("Order Saved")
-    console.log(this.props.alert)
+    console.log(this.props.alert);
+    this.props.alert.success("Order Saved");
+    console.log(this.props.alert);
   }
 
   // Save order and close the modal on "X" click
@@ -107,7 +109,7 @@ class OrderModal extends React.Component {
           payload: this.state.tableData
         };
         this.props.updateOrder(objToSave);
-        this.props.alert.success("Order Saved")
+        this.props.alert.success("Order Saved");
       }
     );
   }
@@ -148,28 +150,28 @@ class OrderModal extends React.Component {
   processData(items, cart) {
     var finalArray = [];
     let counter = 1;
-    
-    if (items.length > 0 && cart.length > 0){
-       cart.forEach( pair => {
-      let name = items[parseInt(pair[0]) - 1].item_name;
-      let item_ID = parseInt(pair[0]);
-      let unitPrice = items[parseInt(pair[0]) - 1].item_price;
-      let quantity = parseInt(pair[1]);
-      let price = unitPrice * quantity;
-      let dataObject = {
-        id: counter,
-        item_id: item_ID,
-        item_name: name,
-        item_price: unitPrice,
-        quantity: quantity,
-        price: price
-      };
-      // console.log(dataObject);
-      finalArray.push(dataObject);
-      counter++;
-    });
+
+    if (items.length > 0 && cart.length > 0) {
+      cart.forEach(pair => {
+        let name = items[parseInt(pair[0]) - 1].item_name;
+        let item_ID = parseInt(pair[0]);
+        let unitPrice = items[parseInt(pair[0]) - 1].item_price;
+        let quantity = parseInt(pair[1]);
+        let price = unitPrice * quantity;
+        let dataObject = {
+          id: counter,
+          item_id: item_ID,
+          item_name: name,
+          item_price: unitPrice,
+          quantity: quantity,
+          price: price
+        };
+        // console.log(dataObject);
+        finalArray.push(dataObject);
+        counter++;
+      });
     }
-   
+
     return finalArray;
   }
 
@@ -285,8 +287,23 @@ class OrderModal extends React.Component {
     ) {
       return true;
     } else {
+
+      this.props.alert.error("Fields are not Completed");
       return false;
     }
+  }
+
+  // Method to check whether item exits already
+  checkExisting(obj) {
+    let bool = true;
+    this.state.tableData.forEach(dataObj => {
+      if (dataObj.item_id === obj.item_id){
+        bool = false;
+        this.removeNew(obj.id);
+        this.props.alert.error("Item exists. Change the quantity")
+      } 
+    })
+    return bool;
   }
 
   //Save locally in the state
@@ -294,7 +311,7 @@ class OrderModal extends React.Component {
     let objToSave;
     let updatedTableData = this.state.tableData;
     this.state.newRowsData.forEach(obj => {
-      if (obj.id === e && this.validateRowTobeSaved(obj)) {
+      if (obj.id === e && this.validateRowTobeSaved(obj) && this.checkExisting(obj)) {
         objToSave = obj;
       }
     });
@@ -307,6 +324,7 @@ class OrderModal extends React.Component {
         },
         () => {
           this.setPrice();
+          this.props.alert.success("Item Added to the Order")
         }
       );
     } else {
@@ -399,7 +417,7 @@ class OrderModal extends React.Component {
                   onClick={() => {
                     this.saveLocal(id);
                   }}
-                  color="info"
+                  color="warning"
                 >
                   Save
                 </Button>
@@ -420,11 +438,20 @@ class OrderModal extends React.Component {
       );
     }
 
+    const pStyle = {
+      fontFamily: 'sans-serif'
+    };
+
     return (
       <div>
         {/* <h1>{this.props.items}</h1> */}
-        <Button className="float-right" color="info" onClick={this.toggle}>
-          View
+        <Button
+          className="float-right"
+          color="info"
+          size="sm"
+          onClick={this.toggle}
+        >
+          <b>View</b>
         </Button>
         <Modal
           size="xl"
@@ -433,45 +460,97 @@ class OrderModal extends React.Component {
           className={this.props.className}
         >
           <ModalHeader toggle={this.saveOrderandClose}>
-            <div align="center">
-              <b>
-                Customer: {this.state.customer} OrderID: {this.state.orderId}
-              </b>
-            </div>
+            <Row>
+              <Col xs="1" />
+              <Col xs="4">
+                <h4>
+                  {" "}
+                  <Badge color="dark">
+                    {" "}
+                    Order Id: <Badge color="info">
+                      {" "}
+                      {this.state.orderId}
+                    </Badge>{" "}
+                  </Badge>{" "}
+                </h4>
+              </Col>
+              <Col xs="2" />
+              <Col xs="4">
+                <h4>
+                  {" "}
+                  <Badge color="dark">
+                    {" "}
+                    Customer: <Badge color="info">
+                      {" "}
+                      {this.state.customer}
+                    </Badge>{" "}
+                  </Badge>{" "}
+                </h4>
+              </Col>
+              <Col xs="1" />
+            </Row>
           </ModalHeader>
           <ModalBody>
-            <Table striped>
+            <Table striped style={pStyle}>
               <thead>
                 <tr>
-                  <th align="center">Item Name</th>
-                  <th align="center">Unit Price ($)</th>
-                  <th align="center">Quantity</th>
-                  <th align="center">Price ($)</th>
+                  <th align="center">
+                    <h5>
+                      <Badge color="secondary" pill>
+                        {" "}
+                        Item Name
+                      </Badge>
+                    </h5>
+                  </th>
+                  <th align="center">
+                    <h5>
+                      <Badge color="secondary" pill>
+                        {" "}
+                        Unit Price ($)
+                      </Badge>
+                    </h5>
+                  </th>
+                  <th align="center">
+                    <h5>
+                      <Badge color="secondary" pill>
+                        {" "}
+                        Quantity
+                      </Badge>
+                    </h5>
+                  </th>
+                  <th align="center">
+                    <h5>
+                      <Badge color="secondary" pill>
+                        {" "}
+                        Price ($){" "}
+                      </Badge>
+                    </h5>
+                  </th>
                   <th />
                 </tr>
               </thead>
               <tbody>
                 {rowsArray}
-                {/* {newRowsArray} */}
+                {newRowsArray}
                 <tr>
                   <th />
-                  <th> Sub Total </th>
+                  <th> <h4>Sub Total</h4> </th>
                   <th>
-                    <b>{this.state.total} $</b>
+                    <b><h4>{this.state.total} $</h4></b>
                   </th>
                   <th />
                   <th />
                 </tr>
 
-                {newRowsArray}
+                {/* {newRowsArray} */}
               </tbody>
             </Table>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.addItem}>
+            <Button color="secondary" onClick={this.addItem}>
               Add Item
             </Button>{" "}
-            <Button color="secondary" onClick={this.saveOrder}>
+            <Button color="warning" onClick={this.saveOrder}>
               Save
             </Button>
           </ModalFooter>
@@ -481,14 +560,13 @@ class OrderModal extends React.Component {
   }
 }
 
-OrderModal.prototypes ={
+OrderModal.prototypes = {
   getOrders: PropTypes.func.isRequired,
   getItems: PropTypes.func.isRequired,
   order: PropTypes.object.isRequired,
   item: PropTypes.object.isRequired,
   addedItems: PropTypes.array.isRequired
-}
-
+};
 
 const mapStateToProps = state => ({
   order: state.order

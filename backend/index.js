@@ -233,8 +233,9 @@ app.get('/isAuthenticated', (req, res) => {
   userController.verifyToken(req.query.token, (err, decode) => {
     if (err) {
       res.send(false);
+    } else {
+      res.send(true);
     }
-    res.send(true);
   });
 });
 

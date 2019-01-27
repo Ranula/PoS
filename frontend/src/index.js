@@ -15,7 +15,8 @@ const options = {
   position: 'top center',
   timeout: 2000,
   offset: '30px',
-  transition: 'scale'
+  transition: 'scale',
+  zIndex: 999999
 }
 
 render(
