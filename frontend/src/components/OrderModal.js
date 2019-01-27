@@ -2,7 +2,6 @@ import React from "react";
 import {
   Row,
   Col,
-  Container,
   Badge,
   Button,
   Modal,
@@ -16,7 +15,6 @@ import QuantityHandler from "./QuantityHandler";
 import { connect } from "react-redux";
 import { updateOrder } from "../actions/orderActions";
 import { PropTypes } from "prop-types";
-import lodash from "lodash";
 import { withAlert } from "react-alert";
 
 class OrderModal extends React.Component {
@@ -56,7 +54,6 @@ class OrderModal extends React.Component {
     );
 
     if (this.state.tableData === null) {
-      console.log("Equal");
       this.setState(
         {
           modal: !this.state.modal,
@@ -69,7 +66,6 @@ class OrderModal extends React.Component {
     }
     // if(lodash.isEqual(this.state.tableData, dataProcessed))
     else {
-      console.log("Not Equal");
       this.setState(
         {
           modal: !this.state.modal
@@ -82,7 +78,6 @@ class OrderModal extends React.Component {
       );
     }
 
-    console.log("TOGGLE");
   }
 
   // Save order to the DB and show an alert
@@ -92,9 +87,7 @@ class OrderModal extends React.Component {
       payload: this.state.tableData
     };
     this.props.updateOrder(objToSave);
-    console.log(this.props.alert);
     this.props.alert.success("Order Saved");
-    console.log(this.props.alert);
   }
 
   // Save order and close the modal on "X" click
@@ -166,7 +159,6 @@ class OrderModal extends React.Component {
           quantity: quantity,
           price: price
         };
-        // console.log(dataObject);
         finalArray.push(dataObject);
         counter++;
       });
@@ -178,13 +170,7 @@ class OrderModal extends React.Component {
   // Calculate Total
   setPrice() {
     let total = 0;
-    console.log(
-      "setPrice called",
-      this.state.tableData,
-      this.state.newRowsData
-    );
     this.state.tableData.forEach(obj => {
-      console.log(obj);
       total = total + obj.price;
     });
 
@@ -201,6 +187,7 @@ class OrderModal extends React.Component {
     let itemPrice;
     let itemId;
     let itemName;
+    // eslint-disable-next-line array-callback-return
     this.props.itemArray.items.map(({ item_id, item_price, item_name }) => {
       if (item_id === item.value) {
         itemPrice = item_price;
@@ -328,7 +315,6 @@ class OrderModal extends React.Component {
         }
       );
     } else {
-      console.log("Adding Failed");
     }
   }
 

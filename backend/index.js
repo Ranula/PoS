@@ -306,7 +306,7 @@ app.get('/getItems', (req, res) => {
  *         description: Open orders Array Returned
  */
 app.post('/updateOrder', (req, res) => {
-  console.log('Update Order with', req.body);
+  // console.log('Update Order with', req.body);
   orderController.updateOrder(req, res, (err, success) => {
     if (err) {
       res.end(JSON.stringify(err));
@@ -316,4 +316,33 @@ app.post('/updateOrder', (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /updateOrder:
+ *   post:
+ *     tags:
+ *       - order
+ *     description: Add a new open order
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: order
+ *         description: order object
+ *         in: body
+ *         required: true
+ *         schema:
+ *           $ref: '#/definitions/orderObj'
+ *     responses:
+ *       200:
+ *         description: Open orders Array Returned
+ */
+app.post('/addOrder', (req, res) => {
+  orderController.addOrder(req, res, (err, success) => {
+    if (err) {
+      res.end(JSON.stringify(err));
+    } else {
+      res.end(JSON.stringify(success));
+    }
+  });
+});
 server.listen(port, () => console.log(`Listening on port ${port}`));

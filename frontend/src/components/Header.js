@@ -1,15 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import {
-  Collapse,
   Navbar,
-  NavbarToggler,
   NavbarBrand,
   Nav,
   NavItem,
   NavLink,
-  Container,
-Button } from 'reactstrap';
+  Container,} from 'reactstrap';
 
 // The Header creates links that can be used to navigate
 // between routes.

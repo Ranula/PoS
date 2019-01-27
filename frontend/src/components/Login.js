@@ -2,7 +2,6 @@ import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBInput, MDBBtn } from "mdbreact";
 import Header from "./Header";
 import axios from "axios";
-import { Container, Row, Col } from "reactstrap";
 
 import { withAlert } from 'react-alert'
 

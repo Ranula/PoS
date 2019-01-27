@@ -1,4 +1,4 @@
-import {GET_ORDERS, ORDERS_LOADING, UPDATE_ORDER} from '../actions/types'
+import {GET_ORDERS, ORDERS_LOADING, UPDATE_ORDER, ADD_ORDER} from '../actions/types'
 
 const initialState = {
     openOrders: [],
@@ -19,6 +19,11 @@ export default  (state = initialState , action) => {
                 loading: true
             }
         case UPDATE_ORDER:
+            return{
+                ...state,
+                openOrders: action.payload,
+            }
+        case ADD_ORDER:
             return{
                 ...state,
                 openOrders: action.payload,

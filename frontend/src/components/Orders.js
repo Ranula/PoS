@@ -1,7 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import * as orderActions from "../actions/orderActions";
-import OrderList from "./OrderList";
 import { getOrders } from "../actions/orderActions";
 import { getItems } from "../actions/itemActions";
 import PropTypes from "prop-types";
@@ -17,8 +15,9 @@ import {
   Input,
   InputGroup
 } from "reactstrap";
-
+import { addOrder } from "../actions/orderActions";
 import OrderModal from "./OrderModal";
+import { withAlert } from "react-alert";
 
 class Orders extends React.Component {
   constructor(props) {
@@ -27,6 +26,7 @@ class Orders extends React.Component {
       newOrders: []
     };
     this.addNewOrder = this.addNewOrder.bind(this);
+    this.saveNewOrder = this.saveNewOrder.bind(this);
   }
 
   componentDidMount() {
@@ -35,19 +35,61 @@ class Orders extends React.Component {
   }
 
   addNewOrder() {
-    console.log("add new order");
     let newOrderId =
       this.props.order.openOrders.length + this.state.newOrders.length + 1;
     // return {newOrderId}
     let dummyOrders = this.state.newOrders;
-    dummyOrders.push(newOrderId);
+    dummyOrders.push({newOrderId,'value':''});
     this.setState({
       newOrders: dummyOrders
     });
   }
 
   saveNewOrder(e) {
-    console.log(e.target);
+    let self = this;
+    // eslint-disable-next-line array-callback-return
+    this.state.newOrders.map((obj)=>{
+        if(obj.newOrderId === e){
+            if(this.validateInput(obj.value)){
+                let objToSave = {
+                    orderID: e,
+                    customer: obj.value
+                  };
+                  self.props.addOrder(objToSave);
+                  self.props.alert.success("Order Saved");
+                  // eslint-disable-next-line eqeqeq
+                  let newArray = this.state.newOrders.filter(obj => obj.newOrderId != e);
+                  this.setState({
+                      newOrders: newArray
+                  })
+            }
+        }
+    })
+ 
+  }
+
+  validateInput(name){
+      if(/^[A-Za-z]+$/.test(name)){
+          return true
+      }else{
+          this.props.alert.error("Please enter a valid name")
+          return false
+      }
+  }
+
+  onChangeInput(e){
+      let test = this.state.newOrders;
+      test = this.state.newOrders.map((obj) => {
+          // eslint-disable-next-line eqeqeq
+          if(obj.newOrderId == e.target.id){
+            obj.value = e.target.value
+            return obj
+          }
+          return obj
+      })
+      this.setState({
+          newOrders: test
+      })
   }
 
   render() {
@@ -85,15 +127,15 @@ class Orders extends React.Component {
       }
     );
 
-    const newOrdersArray = this.state.newOrders.map(id => {
+    const newOrdersArray = this.state.newOrders.map(({newOrderId}) => {
       return (
-        <ListGroupItem key={id}>
+        <ListGroupItem key={newOrderId}>
           {" "}
           <Row>
             <Col xs="4">
               <h4>
                 {" "}
-                <Badge color="light"> # {id}</Badge>{" "}
+                <Badge color="light"> # {newOrderId}</Badge>{" "}
               </h4>
             </Col>
             {/* <Col xs="4" /> */}
@@ -101,7 +143,7 @@ class Orders extends React.Component {
               <h4>
                 <InputGroup>
                   <InputGroupAddon addonType="prepend">Name</InputGroupAddon>
-                  <Input name="inputName" />
+                  <Input id={newOrderId} name="inputName" onChange={this.onChangeInput.bind(this)} />
                 </InputGroup>
               </h4>
             </Col>
@@ -109,12 +151,12 @@ class Orders extends React.Component {
             <Col xs="4">
               <Button
                 className="float-right"
-                id={id}
+                id={newOrderId}
                 color="warning"
-                // onClick={() => {
-                //   this.saveNewOrder(id);
-                // }}
-            onClick = {this.saveNewOrder}
+                onClick={() => {
+                  this.saveNewOrder(newOrderId);
+                }}
+            // onClick = {this.saveNewOrder}
               >
                 {" "}
                 save
@@ -154,5 +196,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getOrders, getItems }
-)(Orders);
+  { getOrders, getItems, addOrder }
+)(withAlert(Orders));

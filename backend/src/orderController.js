@@ -85,3 +85,37 @@ exports.updateOrder = (req, res, callback) => {
       callback(err, null);
     });
 };
+
+
+// Add Order and send new open orders
+
+exports.addOrder = (req, res, callback) => {
+  const dummyObj = {
+    customer: req.body.customer,
+    details_id: req.body.orderID,
+    status: 1,
+    items: [],
+  };
+  nano.use('orders').insert(dummyObj, dummyObj.details_id, (err, body) => {
+    if (err) {
+      callback(err, null);
+    } else {
+      const query1 = {
+        selector: {
+          status: { $eq: 1 },
+        },
+        fields: ['customer', 'details_id', 'status', 'items'],
+      };
+        // Retriving and sending new orders which are open
+      nano
+        .use('orders')
+        .find(query1)
+        .then((doc1) => {
+          callback(null, doc1);
+        })
+        .catch((err1) => {
+          callback(err1, null);
+        });
+    }
+  });
+};

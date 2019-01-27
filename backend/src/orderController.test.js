@@ -9,6 +9,13 @@ const dummyOrder = {
   },
 };
 
+const dummyNewOrder = {
+  body: {
+    orderID: 90,
+    customer: 'SLCMB',
+  },
+};
+
 const dummyReturn = {
   items: [['1', '2'], ['3', '5'], ['5', '1']],
 };
@@ -37,4 +44,14 @@ test('Testing the support function Set Order Items', (done) => {
     done();
   };
   orderController.setOrderItems(dummyOrder.body, callback);
+});
+
+
+test('Testing Add Order Function', (done) => {
+  const callback = (err, success) => {
+    expect(success).not.toBe(null);
+    expect(err).toBe(null);
+    done();
+  };
+  orderController.addOrder(dummyNewOrder, 'mock', callback);
 });
