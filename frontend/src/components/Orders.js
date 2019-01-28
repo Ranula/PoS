@@ -18,6 +18,7 @@ import {
 import { addOrder } from "../actions/orderActions";
 import OrderModal from "./OrderModal";
 import { withAlert } from "react-alert";
+import { MdAddShoppingCart } from 'react-icons/md';
 
 class Orders extends React.Component {
   constructor(props) {
@@ -105,8 +106,16 @@ class Orders extends React.Component {
                   <Badge color="light"> # {index + 1}</Badge>{" "}
                 </h4>
               </Col>
-              {/* <Col xs="4" /> */}
-              <Col xs="4">
+              <Col xs="1" >
+              <img
+                height="70%"
+                width="50%"
+                src={require("../public/customer.png")}
+                alt="customer"
+              />
+              </Col>
+              <Col xs="3">
+              
                 <h4>
                   {" "}
                   <Badge color="light"> {customer}</Badge>{" "}
@@ -175,7 +184,7 @@ class Orders extends React.Component {
         </ListGroup>
         <br />
         <Button className="float-right" onClick={this.addNewOrder}>
-          + New Order
+          <MdAddShoppingCart></MdAddShoppingCart>New Order
         </Button>
       </Container>
     );

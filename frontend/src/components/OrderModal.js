@@ -16,6 +16,8 @@ import { connect } from "react-redux";
 import { updateOrder } from "../actions/orderActions";
 import { PropTypes } from "prop-types";
 import { withAlert } from "react-alert";
+import lodash from 'lodash'
+import { MdDelete, MdSave, MdAddShoppingCart, MdShoppingCart } from 'react-icons/md';
 
 class OrderModal extends React.Component {
   constructor(props) {
@@ -52,8 +54,7 @@ class OrderModal extends React.Component {
       this.props.itemArray.items,
       this.props.addedItems
     );
-
-    if (this.state.tableData === null) {
+    if (this.state.tableData === null || lodash.isEqual(this.state.tableData, dataProcessed)) {
       this.setState(
         {
           modal: !this.state.modal,
@@ -64,7 +65,6 @@ class OrderModal extends React.Component {
         }
       );
     }
-    // if(lodash.isEqual(this.state.tableData, dataProcessed))
     else {
       this.setState(
         {
@@ -352,13 +352,13 @@ class OrderModal extends React.Component {
               <td align="left">{price}</td>
               <td>
                 <Button
-                  size="sm"
+                  size="md"
                   color="danger"
                   onClick={() => {
                     this.removeGlobal(id);
                   }}
                 >
-                  X
+                   <MdDelete></MdDelete>
                 </Button>
               </td>
             </tr>
@@ -399,23 +399,23 @@ class OrderModal extends React.Component {
               <td align="center">{price ? price : "price"}</td>
               <td>
                 <Button
-                  size="sm"
+                  size="md"
                   onClick={() => {
                     this.saveLocal(id);
                   }}
                   color="warning"
                 >
-                  Save
+                  <MdSave></MdSave>
                 </Button>
                 <Button
                   id={id}
                   onClick={() => {
                     this.removeNew(id);
                   }}
-                  size="sm"
+                  size="md"
                   color="danger"
                 >
-                  X
+                  <MdDelete></MdDelete>
                 </Button>
               </td>
             </tr>
@@ -437,7 +437,7 @@ class OrderModal extends React.Component {
           size="sm"
           onClick={this.toggle}
         >
-          <b>View</b>
+          <b><MdShoppingCart></MdShoppingCart>View</b>
         </Button>
         <Modal
           size="xl"
@@ -534,9 +534,11 @@ class OrderModal extends React.Component {
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.addItem}>
+            <MdAddShoppingCart></MdAddShoppingCart>
               Add Item
             </Button>{" "}
             <Button color="warning" onClick={this.saveOrder}>
+            <MdSave></MdSave>
               Save
             </Button>
           </ModalFooter>

@@ -4,6 +4,7 @@ import Header from "./Header";
 import axios from "axios";
 
 import { withAlert } from 'react-alert'
+import { FaSignInAlt } from 'react-icons/fa';
 
 // API Address
 const HOST = "http://localhost:5500";
@@ -33,11 +34,12 @@ class Login extends React.Component {
         console.log(response);
         if (response.data.success) {
           console.log(self.props)
-          localStorage.setItem("token", response.data.token);
+          localStorage.setItem('token', response.data.token);
           self.props.alert.error("Login Failed").then(window.open("/Home", "_self"))
           
         } else {
-          window.alert("Login Failed");
+          // window.alert("Login Failed");
+          self.props.alert.error("Login Failed")
         }
       })
       .catch(function(error) {
@@ -79,7 +81,8 @@ class Login extends React.Component {
                 </div>
                 <div className="text-center">
                   <MDBBtn type="submit" color="primary">
-                    Sign In
+                    Sign In {" "}
+                    <FaSignInAlt></FaSignInAlt>
                   </MDBBtn>
                   {/* <input type="submit" value="Submit" /> */}
                 </div>

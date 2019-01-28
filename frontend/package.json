@@ -13,6 +13,7 @@
     "react-alert-template-basic": "^1.0.0",
     "react-bootstrap-counter": "^1.0.1",
     "react-dom": "^16.7.0",
+    "react-icons": "^3.3.0",
     "react-numeric-input": "^2.2.3",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",

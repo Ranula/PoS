@@ -23,11 +23,8 @@ export const setOrdersLoading = () => {
     }
 }
 export const updateOrder = (order) => dispatch => {
-    console.log("order from redux",order)
-
     axios.post(HOST+'/updateOrder',order)
     .then(res => {
-        // console.log("NOTEDDDDDDDDDDD",res.data)
         dispatch( {
         type: UPDATE_ORDER,
         payload: res.data.docs
@@ -39,11 +36,8 @@ export const updateOrder = (order) => dispatch => {
 }
 
 export const addOrder = (order) => dispatch => {
-    console.log("order from redux",order)
-
     axios.post(HOST+'/addOrder',order)
     .then(res => {
-        // console.log("NOTEDDDDDDDDDDD",res.data)
         dispatch( {
         type: ADD_ORDER,
         payload: res.data.docs
