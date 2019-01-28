@@ -21,7 +21,7 @@ class HomeNavbar extends Component {
   };
 
   logout() {
-    localStorage.clear();
+    localStorage.removeItem('token');
   }
 
   render() {
