@@ -3,11 +3,16 @@
   "version": "1.0.0",
   "description": "backend API for PoS",
   "main": "index.js",
+  "jest": {
+    "verbose": true,
+    "bail": true,
+    "testEnvironment": "node",
+    "collectCoverage": true
+  },
   "scripts": {
     "start": "nodemon index.js",
     "lint": "eslint src/**.js",
-    "test": "jest",
-    "coverage": "jest --collectCoverageFrom=src/**.js --coverage src"
+    "test": "jest"
   },
   "author": "Ranula Liyadipita",
   "license": "MIT",
@@ -21,6 +26,7 @@
     "jsonwebtoken": "^8.4.0",
     "nano": "^8.0.0",
     "nodemon": "^1.18.9",
+    "supertest": "^3.4.2",
     "swagger-jsdoc": "^1.3.0",
     "swagger-ui-express": "^4.0.2"
   },

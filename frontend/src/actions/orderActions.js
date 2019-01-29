@@ -5,6 +5,9 @@ import {GET_ORDERS, ORDERS_LOADING, UPDATE_ORDER, ADD_ORDER} from './types'
 const HOST = "http://localhost:5500";
 
 export const getOrders = () => dispatch => {
+    // var token = localStorage.getItem("token");
+    // console.log(token)
+    // axios.defaults.headers.common['Authorization'] = "Hi";
     dispatch(setOrdersLoading());
     axios.get(HOST + '/openOrders').then( res =>
         dispatch({

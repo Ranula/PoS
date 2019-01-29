@@ -7,24 +7,6 @@ const jwt = require('jsonwebtoken');
 
 const SECRET = 'shush';
 
-// const isAuth = (req, res, next) => {
-//   const token = req.get('token');
-//   if (token) {
-//     jwt.verify(token, SECRET, (err, data) => {
-//       if (err) {
-//         req.isAuthenticated = false;
-//       } else {
-//         req.isAuthenticated = true;
-//         req.user = data;
-//       }
-//       next();
-//     });
-//   } else {
-//     req.isAuthenticated = false;
-//     next();
-//   }
-// };
-
 exports.createUser = (newUser, callback) => {
   bycrypt.genSalt(10, (err, salt) => {
     bycrypt.hash(newUser.password, salt, (err, hash) => {

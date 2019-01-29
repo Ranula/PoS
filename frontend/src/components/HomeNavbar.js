@@ -9,7 +9,8 @@ import {
   Container,
   Button
 } from "reactstrap";
-import { FaSignOutAlt } from 'react-icons/fa';
+import setAuthToken from "../utils/tokens";
+import { FaSignOutAlt } from "react-icons/fa";
 class HomeNavbar extends Component {
   state = {
     isOpen: false
@@ -21,7 +22,8 @@ class HomeNavbar extends Component {
   };
 
   logout() {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
+    // setAuthToken(false);
   }
 
   render() {
@@ -44,8 +46,7 @@ class HomeNavbar extends Component {
               <Nav className="ml-auto" navbar>
                 <NavItem>
                   <Button onClick={this.logout()} href="/">
-                    LogOut {" "}
-                    <FaSignOutAlt></FaSignOutAlt>
+                    LogOut <FaSignOutAlt />
                   </Button>
                 </NavItem>
               </Nav>

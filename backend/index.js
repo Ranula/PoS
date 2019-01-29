@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const userController = require('./src/userController');
 const orderController = require('./src/orderController');
 const itemsController = require('./src/itemsController');
-
+const authController = require('./src/authController');
 
 const app = express();
 
@@ -47,7 +47,7 @@ app.all('/*', (req, res, next) => {
   // Set custom headers for CORS
   res.header(
     'Access-Control-Allow-Headers',
-    'Content-type,Accept,X-Access-Token,X-Key',
+    'Content-type,Accept,X-Access-Token,X-Key,Authorization',
   );
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -346,3 +346,4 @@ app.post('/addOrder', (req, res) => {
   });
 });
 server.listen(port, () => console.log(`Listening on port ${port}`));
+module.exports = { app, server };

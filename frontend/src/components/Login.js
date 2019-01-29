@@ -1,13 +1,12 @@
 import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBInput, MDBBtn } from "mdbreact";
 import Header from "./Header";
-import axios from "axios";
-
+import setAuthToken from '../utils/tokens';
+import {logIn} from '../actions/authActions'
+import { connect } from "react-redux";
 import { withAlert } from 'react-alert'
 import { FaSignInAlt } from 'react-icons/fa';
 
-// API Address
-const HOST = "http://localhost:5500";
 
 class Login extends React.Component {
   
@@ -21,31 +20,21 @@ class Login extends React.Component {
   }
 
   handleSubmit(event) {
+    event.preventDefault();
     var values = event.target.elements;
     let uName = values.usermail.value;
     let uPassword = values.userpassword.value;
-    let self = this;
-    axios
-      .post(HOST + "/login", {
-        username: uName,
-        password: uPassword
-      })
-      .then(function(response) {
-        console.log(response);
-        if (response.data.success) {
-          console.log(self.props)
-          localStorage.setItem('token', response.data.token);
-          self.props.alert.error("Login Failed").then(window.open("/Home", "_self"))
-          
-        } else {
-          // window.alert("Login Failed");
-          self.props.alert.error("Login Failed")
-        }
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
-    event.preventDefault();
+    let user = {
+      username: uName,
+      password: uPassword
+    }
+
+    this.props.logIn(user).then(token =>{
+      setAuthToken(token);
+      this.props.history.push('/Home')
+    }).catch(error =>{
+      this.props.alert.error("Login Failed")
+    })
   }
 
   render() {
@@ -94,4 +83,13 @@ class Login extends React.Component {
     );
   }
 }
-export default withAlert(Login);
+
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(
+  mapStateToProps,
+  { logIn }
+)(withAlert(Login));
+

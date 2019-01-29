@@ -47,11 +47,11 @@ test('Testing the support function Set Order Items', (done) => {
 });
 
 
-test('Testing Add Order Function', (done) => {
-  const callback = (err, success) => {
-    expect(success).not.toBe(null);
-    expect(err).toBe(null);
-    done();
-  };
-  orderController.addOrder(dummyNewOrder, 'mock', callback);
-});
+// test('Testing Add Order Function', (done) => {
+//   const callback = (err, success) => {
+//     expect(success).not.toBe(null);
+//     expect(err).toBe(null);
+//     done();
+//   };
+//   orderController.addOrder(dummyNewOrder, 'mock', callback);
+// });
