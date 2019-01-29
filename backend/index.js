@@ -252,7 +252,7 @@ app.get('/isAuthenticated', (req, res) => {
  *       200:
  *         description: array of open orders
  */
-app.get('/openOrders', (req, res) => {
+app.get('/openOrders', authController.isAuthorized, (req, res) => {
   orderController.getOrders(res, (err, success) => {
     if (err) {
       res.end(JSON.stringify(err));

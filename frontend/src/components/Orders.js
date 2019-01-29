@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { getOrders } from "../actions/orderActions";
 import { getItems } from "../actions/itemActions";
 import PropTypes from "prop-types";
+import store from "../store";
 import {
   Row,
   Col,
@@ -18,7 +19,7 @@ import {
 import { addOrder } from "../actions/orderActions";
 import OrderModal from "./OrderModal";
 import { withAlert } from "react-alert";
-import { MdAddShoppingCart } from 'react-icons/md';
+import { MdAddShoppingCart } from "react-icons/md";
 
 class Orders extends React.Component {
   constructor(props) {
@@ -31,7 +32,15 @@ class Orders extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getOrders();
+    var token = store.getState().auth.token;
+    if(!token){
+      token = JSON.parse(localStorage.getItem('token')).payload.token
+    }
+    console.log(token)
+    this.props.getOrders(token).catch(error => {
+      console.log(error)
+      window.open("/login", "_self");
+    });
     this.props.getItems();
   }
 
@@ -40,7 +49,7 @@ class Orders extends React.Component {
       this.props.order.openOrders.length + this.state.newOrders.length + 1;
     // return {newOrderId}
     let dummyOrders = this.state.newOrders;
-    dummyOrders.push({newOrderId,'value':''});
+    dummyOrders.push({ newOrderId, value: "" });
     this.setState({
       newOrders: dummyOrders
     });
@@ -49,48 +58,49 @@ class Orders extends React.Component {
   saveNewOrder(e) {
     let self = this;
     // eslint-disable-next-line array-callback-return
-    this.state.newOrders.map((obj)=>{
-        if(obj.newOrderId === e){
-            if(this.validateInput(obj.value)){
-                let objToSave = {
-                    orderID: e,
-                    customer: obj.value
-                  };
-                  self.props.addOrder(objToSave);
-                  self.props.alert.success("Order Saved");
-                  // eslint-disable-next-line eqeqeq
-                  let newArray = this.state.newOrders.filter(obj => obj.newOrderId != e);
-                  this.setState({
-                      newOrders: newArray
-                  })
-            }
-        }
-    })
- 
-  }
-
-  validateInput(name){
-      if(/^[A-Za-z]+$/.test(name)){
-          return true
-      }else{
-          this.props.alert.error("Please enter a valid name")
-          return false
-      }
-  }
-
-  onChangeInput(e){
-      let test = this.state.newOrders;
-      test = this.state.newOrders.map((obj) => {
+    this.state.newOrders.map(obj => {
+      if (obj.newOrderId === e) {
+        if (this.validateInput(obj.value)) {
+          let objToSave = {
+            orderID: e,
+            customer: obj.value
+          };
+          self.props.addOrder(objToSave);
+          self.props.alert.success("Order Saved");
           // eslint-disable-next-line eqeqeq
-          if(obj.newOrderId == e.target.id){
-            obj.value = e.target.value
-            return obj
-          }
-          return obj
-      })
-      this.setState({
-          newOrders: test
-      })
+          let newArray = this.state.newOrders.filter(
+            obj => obj.newOrderId != e
+          );
+          this.setState({
+            newOrders: newArray
+          });
+        }
+      }
+    });
+  }
+
+  validateInput(name) {
+    if (/^[A-Za-z]+$/.test(name)) {
+      return true;
+    } else {
+      this.props.alert.error("Please enter a valid name");
+      return false;
+    }
+  }
+
+  onChangeInput(e) {
+    let test = this.state.newOrders;
+    test = this.state.newOrders.map(obj => {
+      // eslint-disable-next-line eqeqeq
+      if (obj.newOrderId == e.target.id) {
+        obj.value = e.target.value;
+        return obj;
+      }
+      return obj;
+    });
+    this.setState({
+      newOrders: test
+    });
   }
 
   render() {
@@ -106,16 +116,15 @@ class Orders extends React.Component {
                   <Badge color="light"> # {index + 1}</Badge>{" "}
                 </h4>
               </Col>
-              <Col xs="1" >
-              <img
-                height="70%"
-                width="50%"
-                src={require("../public/customer.png")}
-                alt="customer"
-              />
+              <Col xs="1">
+                <img
+                  height="70%"
+                  width="50%"
+                  src={require("../public/customer.png")}
+                  alt="customer"
+                />
               </Col>
               <Col xs="3">
-              
                 <h4>
                   {" "}
                   <Badge color="light"> {customer}</Badge>{" "}
@@ -136,7 +145,7 @@ class Orders extends React.Component {
       }
     );
 
-    const newOrdersArray = this.state.newOrders.map(({newOrderId}) => {
+    const newOrdersArray = this.state.newOrders.map(({ newOrderId }) => {
       return (
         <ListGroupItem key={newOrderId}>
           {" "}
@@ -152,7 +161,11 @@ class Orders extends React.Component {
               <h4>
                 <InputGroup>
                   <InputGroupAddon addonType="prepend">Name</InputGroupAddon>
-                  <Input id={newOrderId} name="inputName" onChange={this.onChangeInput.bind(this)} />
+                  <Input
+                    id={newOrderId}
+                    name="inputName"
+                    onChange={this.onChangeInput.bind(this)}
+                  />
                 </InputGroup>
               </h4>
             </Col>
@@ -165,7 +178,7 @@ class Orders extends React.Component {
                 onClick={() => {
                   this.saveNewOrder(newOrderId);
                 }}
-            // onClick = {this.saveNewOrder}
+                // onClick = {this.saveNewOrder}
               >
                 {" "}
                 save
@@ -184,7 +197,7 @@ class Orders extends React.Component {
         </ListGroup>
         <br />
         <Button className="float-right" onClick={this.addNewOrder}>
-          <MdAddShoppingCart></MdAddShoppingCart>New Order
+          <MdAddShoppingCart />New Order
         </Button>
       </Container>
     );

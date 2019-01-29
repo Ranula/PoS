@@ -4,20 +4,17 @@ import {GET_ORDERS, ORDERS_LOADING, UPDATE_ORDER, ADD_ORDER} from './types'
 // API Address
 const HOST = "http://localhost:5500";
 
-export const getOrders = () => dispatch => {
+export const getOrders = (token) => dispatch => {
     // var token = localStorage.getItem("token");
-    // console.log(token)
-    // axios.defaults.headers.common['Authorization'] = "Hi";
+    console.log("Token",token)
+    axios.defaults.headers.common['Authorization'] = token;
     dispatch(setOrdersLoading());
-    axios.get(HOST + '/openOrders').then( res =>
-        dispatch({
+    return axios.get(HOST + '/openOrders').then( res => {
+        return dispatch({
             type: GET_ORDERS,
             payload: res.data
-        })
-    ).catch(error => {
-      console.log(error);
-    });
-
+        });
+    })
 };
 
 export const setOrdersLoading = () => {

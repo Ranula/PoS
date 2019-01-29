@@ -21,9 +21,10 @@ class HomeNavbar extends Component {
     });
   };
 
-  logout() {
-    localStorage.removeItem("token");
-    // setAuthToken(false);
+  logout(event) {
+    event.preventDefault();
+    setAuthToken(false);
+    window.open("/login", "_self")
   }
 
   render() {
@@ -45,7 +46,7 @@ class HomeNavbar extends Component {
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
                 <NavItem>
-                  <Button onClick={this.logout()} href="/">
+                  <Button onClick={this.logout} href="/">
                     LogOut <FaSignOutAlt />
                   </Button>
                 </NavItem>

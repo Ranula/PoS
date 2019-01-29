@@ -1,7 +1,6 @@
 import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBInput, MDBBtn } from "mdbreact";
 import Header from "./Header";
-import setAuthToken from '../utils/tokens';
 import {logIn} from '../actions/authActions'
 import { connect } from "react-redux";
 import { withAlert } from 'react-alert'
@@ -28,9 +27,8 @@ class Login extends React.Component {
       username: uName,
       password: uPassword
     }
-
     this.props.logIn(user).then(token =>{
-      setAuthToken(token);
+      localStorage.setItem('token',JSON.stringify(token))
       this.props.history.push('/Home')
     }).catch(error =>{
       this.props.alert.error("Login Failed")
