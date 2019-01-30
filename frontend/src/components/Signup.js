@@ -1,11 +1,10 @@
 import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBInput, MDBBtn } from "mdbreact";
 import Header from "./Header";
-import axios from "axios";
 import { FaSignInAlt } from "react-icons/fa";
-
-// API Address
-const HOST = "http://localhost:5500";
+import { signUp } from "../actions/authActions";
+import { connect } from "react-redux";
+import { withAlert } from "react-alert";
 
 class Signup extends React.Component {
   constructor(props) {
@@ -19,26 +18,20 @@ class Signup extends React.Component {
     let uEmail = values.usermail.value;
     let uName = values.name.value;
     let uPassword = values.userpassword.value;
-
-    axios
-      .post(HOST + "/signup", {
-        username: uName,
-        usermail: uEmail,
-        password: uPassword
+    let user = {
+      username: uName,
+      usermail: uEmail,
+      password: uPassword
+    };
+    this.props
+      .signUp(user)
+      .then(success => {
+        this.props.alert.success("Login to continue");
+        this.props.history.push("/Login");
       })
-      .then(function(response) {
-        console.log(response);
-        if (response.data.ok) {
-          window.alert("Login to continue");
-          window.open("/login", "_self");
-        } else {
-          window.alert("Signup Failed");
-        }
-      })
-      .catch(function(error) {
-        console.log(error);
+      .catch(error => {
+        this.props.alert.error("Sign Up Failed");
       });
-
     event.preventDefault();
   }
 
@@ -93,10 +86,8 @@ class Signup extends React.Component {
                 </div>
                 <div className="text-center">
                   <MDBBtn type="submit" color="primary">
-                    Sign Up {" "}
-                    <FaSignInAlt></FaSignInAlt>
+                    Sign Up <FaSignInAlt />
                   </MDBBtn>
-                  {/* <input type="submit" value="Submit" /> */}
                 </div>
               </form>
             </MDBCol>
@@ -106,4 +97,11 @@ class Signup extends React.Component {
     );
   }
 }
-export default Signup;
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(
+  mapStateToProps,
+  { signUp }
+)(withAlert(Signup));

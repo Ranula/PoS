@@ -1,4 +1,4 @@
-import {LOG_IN, IS_AUTHENTICATED} from '../actions/types'
+import {LOG_IN, IS_AUTHENTICATED, SIGN_UP} from '../actions/types'
 
 const initialState = {
     token: null,
@@ -17,6 +17,10 @@ export default  (state = initialState , action) => {
             return {
                 ...state,
                 loggedIn: action.payload
+            }
+        case SIGN_UP:
+            return{
+                ...state
             }
         default:
             return state;
