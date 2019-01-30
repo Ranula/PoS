@@ -3,7 +3,7 @@ const nano = require('nano')(config.dbString);
 // Function to get items from the database
 exports.getItems = (res, callback) => {
   nano
-    .use('items')
+    .use(config.itemDB)
     .list({ include_docs: true })
     .then((doc) => {
       const items = [];

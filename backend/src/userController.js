@@ -4,7 +4,6 @@ const nano = require('nano')(config.dbString);
 const bycrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-
 const SECRET = 'shush';
 
 exports.createUser = (newUser, callback) => {
@@ -12,7 +11,7 @@ exports.createUser = (newUser, callback) => {
     bycrypt.hash(newUser.password, salt, (err, hash) => {
       newUser.password = hash;
       nano
-        .use('mylibrary')
+        .use(config.userDB)
         .insert(newUser, newUser.usermail, (err, body, header) => {
           if (err) {
             callback(err, null);
@@ -37,7 +36,7 @@ const comparePassword = (candidatePassword, hash, cb) => {
 exports.authenticate = (user, callback) => {
   // this.comparePassword("a","b",callback)
   nano
-    .use('mylibrary')
+    .use(config.userDB)
     .get(user.username)
     .then((body) => {
       // console.log(body);
@@ -51,7 +50,7 @@ exports.authenticate = (user, callback) => {
 // const getUser = (user, callback) => {
 //   // this.comparePassword("a","b",callback)
 //   nano
-//     .use('mylibrary')
+//     .use(config.userDB)
 //     .get(user.username)
 //     .then((body) => {
 //       console.log(body);

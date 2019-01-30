@@ -3,7 +3,7 @@
 
 
 // exports.CreateDB = () => {
-//   nano.db.create('mylibrary', (err, body, header) => {
+//   nano.db.create('users', (err, body, header) => {
 //     if (err) {
 //       console.log(`Database creation failed. ${err}\n`);
 //     } else {

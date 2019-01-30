@@ -11,7 +11,7 @@ const user = {
 };
 
 const newUser = {
-  username: 'a@b3',
+  username: 'test',
   password: '1233',
 };
 

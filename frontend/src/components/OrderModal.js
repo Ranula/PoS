@@ -16,8 +16,14 @@ import { connect } from "react-redux";
 import { updateOrder } from "../actions/orderActions";
 import { PropTypes } from "prop-types";
 import { withAlert } from "react-alert";
-import lodash from 'lodash'
-import { MdDelete, MdSave, MdAddShoppingCart, MdShoppingCart } from 'react-icons/md';
+import lodash from "lodash";
+import {
+  MdDelete,
+  MdSave,
+  MdAddShoppingCart,
+  MdShoppingCart
+} from "react-icons/md";
+import store from "../store";
 
 class OrderModal extends React.Component {
   constructor(props) {
@@ -54,7 +60,10 @@ class OrderModal extends React.Component {
       this.props.itemArray.items,
       this.props.addedItems
     );
-    if (this.state.tableData === null || lodash.isEqual(this.state.tableData, dataProcessed)) {
+    if (
+      this.state.tableData === null ||
+      lodash.isEqual(this.state.tableData, dataProcessed)
+    ) {
       this.setState(
         {
           modal: !this.state.modal,
@@ -64,8 +73,7 @@ class OrderModal extends React.Component {
           this.setPrice();
         }
       );
-    }
-    else {
+    } else {
       this.setState(
         {
           modal: !this.state.modal
@@ -77,17 +85,29 @@ class OrderModal extends React.Component {
         }
       );
     }
-
   }
 
   // Save order to the DB and show an alert
   saveOrder() {
+    // Set auth Token
+    var token = store.getState().auth.token;
+    if (!token) {
+      token = JSON.parse(localStorage.getItem("token")).payload.token;
+    }
+
     let objToSave = {
       orderID: this.props.orderId,
       payload: this.state.tableData
     };
-    this.props.updateOrder(objToSave);
-    this.props.alert.success("Order Saved");
+
+    this.props
+      .updateOrder(objToSave, token)
+      .then(success => {
+        this.props.alert.success("Order Saved");
+      })
+      .catch(error => {
+        this.props.alert.success("Saving Failed");
+      });
   }
 
   // Save order and close the modal on "X" click
@@ -97,12 +117,13 @@ class OrderModal extends React.Component {
         modal: !this.state.modal
       },
       () => {
-        let objToSave = {
-          orderID: this.props.orderId,
-          payload: this.state.tableData
-        };
-        this.props.updateOrder(objToSave);
-        this.props.alert.success("Order Saved");
+        var dataProcessed = this.processData(
+          this.props.itemArray.items,
+          this.props.addedItems
+        );
+        if (!lodash.isEqual(this.state.tableData, dataProcessed)) {
+          this.saveOrder();
+        }
       }
     );
   }
@@ -274,22 +295,21 @@ class OrderModal extends React.Component {
     ) {
       return true;
     } else {
-
       this.props.alert.error("Fields are not Completed");
       return false;
     }
   }
 
-  // Method to check whether item exits already
+  // Method to check whether item exists already
   checkExisting(obj) {
     let bool = true;
     this.state.tableData.forEach(dataObj => {
-      if (dataObj.item_id === obj.item_id){
+      if (dataObj.item_id === obj.item_id) {
         bool = false;
         this.removeNew(obj.id);
-        this.props.alert.error("Item exists. Change the quantity")
-      } 
-    })
+        this.props.alert.error("Item exists. Change the quantity");
+      }
+    });
     return bool;
   }
 
@@ -298,7 +318,11 @@ class OrderModal extends React.Component {
     let objToSave;
     let updatedTableData = this.state.tableData;
     this.state.newRowsData.forEach(obj => {
-      if (obj.id === e && this.validateRowTobeSaved(obj) && this.checkExisting(obj)) {
+      if (
+        obj.id === e &&
+        this.validateRowTobeSaved(obj) &&
+        this.checkExisting(obj)
+      ) {
         objToSave = obj;
       }
     });
@@ -311,7 +335,7 @@ class OrderModal extends React.Component {
         },
         () => {
           this.setPrice();
-          this.props.alert.success("Item Added to the Order")
+          this.props.alert.success("Item Added to the Order");
         }
       );
     } else {
@@ -358,7 +382,7 @@ class OrderModal extends React.Component {
                     this.removeGlobal(id);
                   }}
                 >
-                   <MdDelete></MdDelete>
+                  <MdDelete />
                 </Button>
               </td>
             </tr>
@@ -405,7 +429,7 @@ class OrderModal extends React.Component {
                   }}
                   color="warning"
                 >
-                  <MdSave></MdSave>
+                  <MdSave />
                 </Button>
                 <Button
                   id={id}
@@ -415,7 +439,7 @@ class OrderModal extends React.Component {
                   size="md"
                   color="danger"
                 >
-                  <MdDelete></MdDelete>
+                  <MdDelete />
                 </Button>
               </td>
             </tr>
@@ -425,7 +449,7 @@ class OrderModal extends React.Component {
     }
 
     const pStyle = {
-      fontFamily: 'sans-serif'
+      fontFamily: "sans-serif"
     };
 
     return (
@@ -437,7 +461,9 @@ class OrderModal extends React.Component {
           size="sm"
           onClick={this.toggle}
         >
-          <b><MdShoppingCart></MdShoppingCart>View</b>
+          <b>
+            <MdShoppingCart />View
+          </b>
         </Button>
         <Modal
           size="xl"
@@ -520,9 +546,14 @@ class OrderModal extends React.Component {
                 {newRowsArray}
                 <tr>
                   <th />
-                  <th> <h4>Sub Total</h4> </th>
                   <th>
-                    <b><h4>{this.state.total} $</h4></b>
+                    {" "}
+                    <h4>Sub Total</h4>{" "}
+                  </th>
+                  <th>
+                    <b>
+                      <h4>{this.state.total} $</h4>
+                    </b>
                   </th>
                   <th />
                   <th />
@@ -534,11 +565,11 @@ class OrderModal extends React.Component {
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.addItem}>
-            <MdAddShoppingCart></MdAddShoppingCart>
+              <MdAddShoppingCart />
               Add Item
             </Button>{" "}
             <Button color="warning" onClick={this.saveOrder}>
-            <MdSave></MdSave>
+              <MdSave />
               Save
             </Button>
           </ModalFooter>

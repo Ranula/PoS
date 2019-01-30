@@ -275,7 +275,7 @@ app.get('/openOrders', authController.isAuthorized, (req, res) => {
  *       200:
  *         description: array of items
  */
-app.get('/getItems', (req, res) => {
+app.get('/getItems', authController.isAuthorized, (req, res) => {
   itemsController.getItems(res, (err, success) => {
     if (err) {
       res.end(JSON.stringify(err));
@@ -305,7 +305,7 @@ app.get('/getItems', (req, res) => {
  *       200:
  *         description: Open orders Array Returned
  */
-app.post('/updateOrder', (req, res) => {
+app.post('/updateOrder', authController.isAuthorized, (req, res) => {
   // console.log('Update Order with', req.body);
   orderController.updateOrder(req, res, (err, success) => {
     if (err) {
@@ -336,7 +336,7 @@ app.post('/updateOrder', (req, res) => {
  *       200:
  *         description: Open orders Array Returned
  */
-app.post('/addOrder', (req, res) => {
+app.post('/addOrder', authController.isAuthorized, (req, res) => {
   orderController.addOrder(req, res, (err, success) => {
     if (err) {
       res.end(JSON.stringify(err));

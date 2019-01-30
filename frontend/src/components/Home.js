@@ -7,8 +7,6 @@ import { withAlert } from "react-alert";
 import store from '../store';
 import {isAuthenticated} from '../actions/authActions';
 import { connect } from "react-redux";
-// API Address
-const HOST = "http://localhost:5500";
 
 class Home extends Component {
   constructor(props) {
@@ -23,7 +21,6 @@ class Home extends Component {
     if(!token){
       token = JSON.parse(localStorage.getItem('token')).payload.token
     }
-    console.log("Did Mount", token)
     this.props.isAuthenticated(token).then(success=>{
       if(success.payload){
         this.props.alert.success("Authentication Successfull");

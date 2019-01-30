@@ -1,13 +1,12 @@
 import axios from 'axios'
 import {GET_ORDERS, ORDERS_LOADING, UPDATE_ORDER, ADD_ORDER} from './types'
-
+import authToken from '../utils/tokens'
 // API Address
 const HOST = "http://localhost:5500";
 
 export const getOrders = (token) => dispatch => {
-    // var token = localStorage.getItem("token");
-    console.log("Token",token)
-    axios.defaults.headers.common['Authorization'] = token;
+    authToken(token);
+    // axios.defaults.headers.common['Authorization'] = token;
     dispatch(setOrdersLoading());
     return axios.get(HOST + '/openOrders').then( res => {
         return dispatch({
@@ -22,28 +21,24 @@ export const setOrdersLoading = () => {
         type: ORDERS_LOADING
     }
 }
-export const updateOrder = (order) => dispatch => {
-    axios.post(HOST+'/updateOrder',order)
+export const updateOrder = (order,token) => dispatch => {
+    authToken(token);
+    return axios.post(HOST+'/updateOrder',order)
     .then(res => {
-        dispatch( {
+        return dispatch( {
         type: UPDATE_ORDER,
         payload: res.data.docs
     });
-    
-}).catch(error =>{
-        console.log(error)
-    })
-}
+})};
 
-export const addOrder = (order) => dispatch => {
-    axios.post(HOST+'/addOrder',order)
+export const addOrder = (order,token) => dispatch => {
+    authToken(token);
+    return axios.post(HOST+'/addOrder',order)
     .then(res => {
-        dispatch( {
+        return dispatch( {
         type: ADD_ORDER,
         payload: res.data.docs
     });
     
-}).catch(error =>{
-        console.log(error)
-    })
+})
 }

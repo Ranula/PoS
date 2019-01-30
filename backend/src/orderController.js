@@ -10,7 +10,7 @@ exports.getOrders = (res, callback) => {
     fields: ['customer', 'details_id', 'status', 'items'],
   };
   nano
-    .use('orders')
+    .use(config.orderDB)
     .find(q)
     .then((doc) => {
       callback(null, doc);
@@ -45,7 +45,7 @@ exports.updateOrder = (req, res, callback) => {
   };
   // Performing a find to capture the _rev
   nano
-    .use('orders')
+    .use(config.orderDB)
     .find(query)
     .then((doc) => {
       // console.log(doc);
@@ -57,7 +57,7 @@ exports.updateOrder = (req, res, callback) => {
         dummyObj.customer = doc.docs[0].customer;
         const orderId = doc.docs[0]._id;
         // Inserting new order details
-        nano.use('orders').insert(dummyObj, orderId, (err, body) => {
+        nano.use(config.orderDB).insert(dummyObj, orderId, (err, body) => {
           if (err) {
             callback(err, null);
           } else {
@@ -69,7 +69,7 @@ exports.updateOrder = (req, res, callback) => {
             };
             // Retriving and sending new orders which are open
             nano
-              .use('orders')
+              .use(config.orderDB)
               .find(query1)
               .then((doc1) => {
                 callback(null, doc1);
@@ -96,7 +96,7 @@ exports.addOrder = (req, res, callback) => {
     status: 1,
     items: [],
   };
-  nano.use('orders').insert(dummyObj, dummyObj.details_id, (err, body) => {
+  nano.use(config.orderDB).insert(dummyObj, dummyObj.details_id, (err, body) => {
     if (err) {
       callback(err, null);
     } else {
@@ -108,7 +108,7 @@ exports.addOrder = (req, res, callback) => {
       };
         // Retriving and sending new orders which are open
       nano
-        .use('orders')
+        .use(config.orderDB)
         .find(query1)
         .then((doc1) => {
           callback(null, doc1);

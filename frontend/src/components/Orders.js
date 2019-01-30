@@ -32,22 +32,26 @@ class Orders extends React.Component {
   }
 
   componentDidMount() {
+    // Set Token for auth
+
     var token = store.getState().auth.token;
-    if(!token){
-      token = JSON.parse(localStorage.getItem('token')).payload.token
+    if (!token) {
+      token = JSON.parse(localStorage.getItem("token")).payload.token;
     }
-    console.log(token)
+
     this.props.getOrders(token).catch(error => {
-      console.log(error)
+      console.log(error);
       window.open("/login", "_self");
     });
-    this.props.getItems();
+    this.props.getItems(token).catch(error => {
+      console.log(error);
+      window.open("/login", "_self");
+    });
   }
 
   addNewOrder() {
     let newOrderId =
       this.props.order.openOrders.length + this.state.newOrders.length + 1;
-    // return {newOrderId}
     let dummyOrders = this.state.newOrders;
     dummyOrders.push({ newOrderId, value: "" });
     this.setState({
@@ -61,19 +65,32 @@ class Orders extends React.Component {
     this.state.newOrders.map(obj => {
       if (obj.newOrderId === e) {
         if (this.validateInput(obj.value)) {
+          // Set Token for auth
+          var token = store.getState().auth.token;
+          if (!token) {
+            token = JSON.parse(localStorage.getItem("token")).payload.token;
+          }
+
           let objToSave = {
             orderID: e,
             customer: obj.value
           };
-          self.props.addOrder(objToSave);
-          self.props.alert.success("Order Saved");
-          // eslint-disable-next-line eqeqeq
-          let newArray = this.state.newOrders.filter(
-            obj => obj.newOrderId != e
-          );
-          this.setState({
-            newOrders: newArray
-          });
+
+          self.props
+            .addOrder(objToSave, token)
+            .then(success => {
+              self.props.alert.success("Order Saved");
+              let newArray = this.state.newOrders.filter(
+                // eslint-disable-next-line eqeqeq
+                obj => obj.newOrderId != e
+              );
+              this.setState({
+                newOrders: newArray
+              });
+            })
+            .catch(error => {
+              self.props.alert.success("Order Saving Failed");
+            });
         }
       }
     });
@@ -156,7 +173,6 @@ class Orders extends React.Component {
                 <Badge color="light"> # {newOrderId}</Badge>{" "}
               </h4>
             </Col>
-            {/* <Col xs="4" /> */}
             <Col xs="4">
               <h4>
                 <InputGroup>
@@ -169,7 +185,6 @@ class Orders extends React.Component {
                 </InputGroup>
               </h4>
             </Col>
-            {/* <Col xs="4" /> */}
             <Col xs="4">
               <Button
                 className="float-right"
@@ -178,7 +193,6 @@ class Orders extends React.Component {
                 onClick={() => {
                   this.saveNewOrder(newOrderId);
                 }}
-                // onClick = {this.saveNewOrder}
               >
                 {" "}
                 save
@@ -197,7 +211,8 @@ class Orders extends React.Component {
         </ListGroup>
         <br />
         <Button className="float-right" onClick={this.addNewOrder}>
-          <MdAddShoppingCart />New Order
+          <MdAddShoppingCart />
+          New Order
         </Button>
       </Container>
     );
