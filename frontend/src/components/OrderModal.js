@@ -106,7 +106,7 @@ class OrderModal extends React.Component {
         this.props.alert.success("Order Saved");
       })
       .catch(error => {
-        this.props.alert.success("Saving Failed");
+        this.props.alert.error("Saving Failed. Try Signing in again");
       });
   }
 

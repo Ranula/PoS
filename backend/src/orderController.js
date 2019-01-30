@@ -83,7 +83,7 @@ exports.updateOrder = (req, res, callback) => {
     })
     .catch((err) => {
       callback(err, null);
-    });
+    }); 
 };
 
 

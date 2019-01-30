@@ -3,7 +3,7 @@ const orderController = require('./orderController');
 
 const dummyOrder = {
   body: {
-    orderID: 2,
+    orderID: 90,
     payload: [{ item_id: 1, quantity: 2 }, { item_id: 3, quantity: 5 },
       { item_id: 5, quantity: 1 }],
   },
@@ -29,6 +29,15 @@ test('Testing Open Orders Fetching', (done) => {
   orderController.getOrders('mock', callback);
 });
 
+test('Testing Add Order Function', (done) => {
+  const callback = (err, success) => {
+    expect(success).not.toBe(null);
+    expect(err).toBe(null);
+    done();
+  };
+  orderController.addOrder(dummyNewOrder, 'mock', callback);
+});
+
 test('Testing Update Order Function', (done) => {
   const callback = (err, success) => {
     expect(success).not.toBe(null);
@@ -45,13 +54,3 @@ test('Testing the support function Set Order Items', (done) => {
   };
   orderController.setOrderItems(dummyOrder.body, callback);
 });
-
-
-// test('Testing Add Order Function', (done) => {
-//   const callback = (err, success) => {
-//     expect(success).not.toBe(null);
-//     expect(err).toBe(null);
-//     done();
-//   };
-//   orderController.addOrder(dummyNewOrder, 'mock', callback);
-// });
