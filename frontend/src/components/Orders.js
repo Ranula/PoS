@@ -18,6 +18,7 @@ import {
 } from "reactstrap";
 import { addOrder } from "../actions/orderActions";
 import OrderModal from "./OrderModal";
+import PayModal from "./PayModal";
 import { withAlert } from "react-alert";
 import { MdAddShoppingCart } from "react-icons/md";
 
@@ -148,8 +149,16 @@ class Orders extends React.Component {
                 </h4>
               </Col>
               {/* <Col xs="4" /> */}
-              <Col xs="4">
+              <Col xs="2">
                 <OrderModal
+                  orderId={details_id}
+                  customer={customer}
+                  addedItems={items}
+                  itemArray={this.props.item}
+                />
+              </Col>
+              <Col xs="2">
+                <PayModal
                   orderId={details_id}
                   customer={customer}
                   addedItems={items}

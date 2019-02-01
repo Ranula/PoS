@@ -52,7 +52,11 @@ exports.updateOrder = (req, res, callback) => {
       this.setOrderItems(req.body, (newOrderobj) => {
         const dummyObj = newOrderobj;
         dummyObj._rev = doc.docs[0]._rev;
-        dummyObj.status = doc.docs[0].status;
+        if (req.body.pay) {
+          dummyObj.status = 0;
+        } else {
+          dummyObj.status = doc.docs[0].status;
+        }
         dummyObj.details_id = doc.docs[0].details_id;
         dummyObj.customer = doc.docs[0].customer;
         const orderId = doc.docs[0]._id;
@@ -83,39 +87,43 @@ exports.updateOrder = (req, res, callback) => {
     })
     .catch((err) => {
       callback(err, null);
-    }); 
+    });
 };
-
 
 // Add Order and send new open orders
 
 exports.addOrder = (req, res, callback) => {
-  const dummyObj = {
-    customer: req.body.customer,
-    details_id: req.body.orderID,
-    status: 1,
-    items: [],
-  };
-  nano.use(config.orderDB).insert(dummyObj, dummyObj.details_id, (err, body) => {
-    if (err) {
-      callback(err, null);
-    } else {
-      const query1 = {
-        selector: {
-          status: { $eq: 1 },
-        },
-        fields: ['customer', 'details_id', 'status', 'items'],
-      };
-        // Retriving and sending new orders which are open
-      nano
-        .use(config.orderDB)
-        .find(query1)
-        .then((doc1) => {
-          callback(null, doc1);
-        })
-        .catch((err1) => {
-          callback(err1, null);
-        });
-    }
+  nano.use(config.orderDB).info().then((body) => {
+    const newOrderID = body.doc_count + 1;
+    const dummyObj = {
+      customer: req.body.customer,
+      details_id: newOrderID,
+      status: 1,
+      items: [],
+    };
+    nano
+      .use(config.orderDB)
+      .insert(dummyObj, dummyObj.details_id, (err, body) => {
+        if (err) {
+          callback(err, null);
+        } else {
+          const query1 = {
+            selector: {
+              status: { $eq: 1 },
+            },
+            fields: ['customer', 'details_id', 'status', 'items'],
+          };
+          // Retriving and sending new orders which are open
+          nano
+            .use(config.orderDB)
+            .find(query1)
+            .then((doc1) => {
+              callback(null, doc1);
+            })
+            .catch((err1) => {
+              callback(err1, null);
+            });
+        }
+      });
   });
 };
